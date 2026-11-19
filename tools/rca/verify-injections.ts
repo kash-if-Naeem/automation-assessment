@@ -11,7 +11,7 @@ import path from 'path';
  */
 
 /** Accepted classifications per injected fault, most-correct first. */
-const EXPECTED: Record<string, { accept: string[]; rationale: string }> = {
+export const EXPECTED: Record<string, { accept: string[]; rationale: string }> = {
   'FI-01': {
     accept: ['TEST_SCRIPT_DEFECT'],
     rationale: 'A wrong expected value committed to the spec in HEAD is a script defect.',
@@ -29,6 +29,28 @@ const EXPECTED: Record<string, { accept: string[]; rationale: string }> = {
 const OUT_DIR = path.join(process.cwd(), 'reports', 'rca');
 const REPORT = path.join(OUT_DIR, 'rca-report.json');
 
+/**
+ * FI-01 injects its fault into an existing scenario's spec, so the resulting RCA record is
+ * filed under that scenario (for example AE-12), not under "FI-01". The injection branch
+ * declares the mapping it expects:
+ *   RCA_EXPECT='{"AE-12":{"accept":["TEST_SCRIPT_DEFECT"],"rationale":"FI-01 ..."}}'
+ */
+function withOverrides(base: typeof EXPECTED): typeof EXPECTED {
+  const raw = process.env.RCA_EXPECT;
+  if (!raw) return base;
+  try {
+    const parsed = JSON.parse(raw) as Record<string, { accept: string[]; rationale?: string }>;
+    const merged = { ...base };
+    for (const [id, v] of Object.entries(parsed)) {
+      merged[id] = { accept: v.accept, rationale: v.rationale ?? 'declared by RCA_EXPECT' };
+    }
+    return merged;
+  } catch (e) {
+    console.error('[RCA Verify] RCA_EXPECT is not valid JSON:', (e as Error).message);
+    process.exit(1);
+  }
+}
+
 interface Row {
   scenario_id: string;
   classification: string;
@@ -44,11 +66,12 @@ function main(): void {
     process.exit(1);
   }
 
+  const expected = withOverrides(EXPECTED);
   const records: Array<{ scenario_id: string; classification: string; confidence: number }> = JSON.parse(
     fs.readFileSync(REPORT, 'utf-8'),
   );
   const seen = new Map<string, (typeof records)[number]>();
-  for (const r of records) if (EXPECTED[r.scenario_id] && !seen.has(r.scenario_id)) seen.set(r.scenario_id, r);
+  for (const r of records) if (expected[r.scenario_id] && !seen.has(r.scenario_id)) seen.set(r.scenario_id, r);
 
   if (seen.size === 0) {
     console.error('[RCA Verify] No injected-fault records found. Run with FAULT_INJECTION set.');
