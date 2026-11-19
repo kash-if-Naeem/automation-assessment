@@ -1,0 +1,74 @@
+[
+  {
+    "schema_version": "1.1",
+    "scenario_id": "AE-12",
+    "test_title": "AE-12: Quantity 4 gives the correct line total @p0",
+    "classification": "TEST_SCRIPT_DEFECT",
+    "confidence": 0.7,
+    "status": "HYPOTHESIS_PENDING_REVIEW",
+    "symptom": "Error: expect(received).toBe(expected) // Object.is equality",
+    "hypotheses": [
+      {
+        "classification": "TEST_SCRIPT_DEFECT",
+        "confidence": 0.7,
+        "rule": "assertion-mismatch-recent-spec-change",
+        "evidence_for": ["ui/cart.spec.ts changed in 5931405 (git diff HEAD~1 HEAD)"],
+        "evidence_against": ["product behaviour may also have changed; re-run isolated test to confirm"]
+      },
+      {
+        "classification": "PRODUCT_DEFECT",
+        "confidence": 0.5,
+        "rule": "assertion-mismatch",
+        "evidence_for": ["assertion compared expected and received values"],
+        "evidence_against": ["the failing spec changed in HEAD (see TEST_SCRIPT_DEFECT)"]
+      }
+    ],
+    "evidence": [
+      {
+        "type": "error",
+        "detail": "Error: expect(received).toBe(expected) // Object.is equality"
+      },
+      {
+        "type": "stack",
+        "detail": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 2500"
+      },
+      {
+        "type": "trace",
+        "path": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/trace.zip"
+      },
+      {
+        "type": "screenshot",
+        "path": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/test-failed-1.png"
+      },
+      {
+        "type": "dom",
+        "path": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+      },
+      {
+        "type": "console",
+        "detail": "9 entry/entries: Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st"
+      },
+      {
+        "type": "network",
+        "detail": "13 failed/error response(s): mixed-content http://fonts.googleapis.com/css | mixed-content http://fonts.googleapis.com/css | mixed-content http://fonts.googleapis.com/css"
+      },
+      {
+        "type": "diff",
+        "detail": "HEAD touched: tests/ui/cart.spec.ts"
+      },
+      {
+        "type": "run",
+        "detail": "local @ 593140518bde4b0a3831b6c56bac639e49205b84"
+      }
+    ],
+    "validation": "Re-run isolated test: npx playwright test -g \"AE-12\". Inspect the trace before any code change.",
+    "recommended_action": "Reviewer verifies evidence, then decides. Any patch goes to a separate branch.",
+    "requires_human_approval": true,
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "593140518bde4b0a3831b6c56bac639e49205b84",
+      "collected_at": "2026-11-19T20:32:29.745Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  }
+]

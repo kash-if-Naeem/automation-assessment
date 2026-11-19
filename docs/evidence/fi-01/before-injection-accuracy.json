@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "evaluated_at": "2026-11-19T20:33:32.566Z",
+  "correct": 1,
+  "total": 1,
+  "rows": [
+    {
+      "scenario_id": "AE-12",
+      "classification": "TEST_SCRIPT_DEFECT",
+      "confidence": 0.7,
+      "expected": ["TEST_SCRIPT_DEFECT"],
+      "correct": true,
+      "rationale": "FI-01: wrong expected cart total injected into AE-12 in HEAD"
+    }
+  ]
+}
