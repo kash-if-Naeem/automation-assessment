@@ -8,7 +8,7 @@ export class ContactPage extends BasePage {
   readonly message: Locator = this.page.locator('textarea[data-qa="message"]');
   readonly file: Locator = this.page.locator('input[name="upload_file"]');
   readonly submit: Locator = this.page.getByRole('button', { name: /submit/i });
-  readonly getInTouchHeading: Locator = this.page.getByRole('heading', { name: /get in touch/i });
+  readonly successAlert: Locator = this.page.locator('.status.alert.alert-success');
 
   async open(): Promise<void> {
     await this.goto('/contact_us');
@@ -26,18 +26,9 @@ export class ContactPage extends BasePage {
     await this.subject.fill(subject);
     await this.message.fill(message);
     if (uploadPath) await this.file.setInputFiles(uploadPath);
-    
-    // The site uses an alert dialog confirmation
-    this.page.once('dialog', async (d) => {
-      await d.accept();
-    });
-    
+    // The site confirms with a JavaScript alert before submitting.
+    this.page.once('dialog', (d) => void d.accept());
     await this.submit.click();
     await this.logAction('submitted contact form');
-  }
-
-  async isSuccessVisible(): Promise<boolean> {
-    const success = this.page.locator('.status.alert.alert-success');
-    return await success.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
   }
 }

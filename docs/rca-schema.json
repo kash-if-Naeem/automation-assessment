@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/qa-ai-level3/rca-record.schema.json",
+  "title": "RCA record (schema_version 1.0)",
+  "description": "One record per failed or flaky test, written to reports/rca/rca-report.json. Classifications must cite artifacts; confidence is a calibrated judgement, not proof.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "test_title",
+    "classification",
+    "confidence",
+    "status",
+    "symptom",
+    "hypotheses",
+    "evidence",
+    "validation",
+    "recommended_action",
+    "requires_human_approval",
+    "detect"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "scenario_id": { "type": "string", "pattern": "^(AE|FI)-\\d+$|^UNKNOWN$" },
+    "test_title": { "type": "string" },
+    "classification": {
+      "enum": [
+        "PRODUCT_DEFECT",
+        "TEST_SCRIPT_DEFECT",
+        "LOCATOR_OR_UI_CHANGE",
+        "TEST_DATA_OR_STATE",
+        "ENVIRONMENT_OR_NETWORK",
+        "TIMING_OR_FLAKINESS",
+        "THIRD_PARTY_DEPENDENCY",
+        "UNKNOWN"
+      ]
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "status": { "enum": ["HYPOTHESIS_PENDING_REVIEW"] },
+    "symptom": { "type": "string", "maxLength": 300 },
+    "hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["classification", "confidence", "rule", "evidence_for", "evidence_against"],
+        "properties": {
+          "classification": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "rule": { "type": "string" },
+          "evidence_for": { "type": "array", "items": { "type": "string" } },
+          "evidence_against": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": { "enum": ["error", "stack", "trace", "screenshot", "console", "network", "run", "diff"] },
+          "path": { "type": "string" },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "validation": { "type": "string" },
+    "recommended_action": { "type": "string" },
+    "requires_human_approval": { "const": true },
+    "detect": {
+      "type": "object",
+      "required": ["run_url", "commit_sha", "collected_at"],
+      "properties": {
+        "run_url": { "type": "string" },
+        "commit_sha": { "type": "string" },
+        "collected_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

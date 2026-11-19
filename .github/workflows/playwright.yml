@@ -1,60 +1,68 @@
 name: Playwright QA + AI RCA
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
   workflow_dispatch:
   schedule:
-    # 05:00 Asia/Karachi is 00:00 UTC. Pakistan does not observe DST.
+    # 05:00 Asia/Karachi (PKT, UTC+5, no DST) = 00:00 UTC. Cron runs on the default branch only.
     - cron: '0 0 * * *'
+
+# One run per ref; a newer PR push cancels the older run.
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   qa:
     runs-on: ubuntu-latest
     timeout-minutes: 35
-    permissions:
-      contents: read
-      pull-requests: write
-
+    env:
+      PW_WORKERS: 2
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-      - name: Setup Node.js
+      - name: Setup Node.js (version from .nvmrc)
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
+      - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      # Typecheck does not block the tests: its result is enforced by the final gate.
       - name: Type check
+        id: typecheck
+        continue-on-error: true
         run: npx tsc --noEmit
 
-      - name: Run Playwright Tests
+      - name: Run Playwright tests
         id: tests
-        # The `continue-on-error` is true so that the workflow doesn't stop here if tests fail.
-        # We need the workflow to continue so it can run the RCA steps.
         continue-on-error: true
         run: npx playwright test
 
-      - name: Generate deterministic failure bundle
+      - name: Collect deterministic failure bundle
         if: always()
         run: npm run rca:collect
 
-      - name: AI-assisted RCA (Optional LLM / Model-Free Fallback)
+      # Model-free by default. AI_API_KEY is only exposed to trusted (non-fork) runs.
+      - name: RCA analysis
         if: always()
         env:
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
         run: npm run rca:analyze
 
-      - name: Upload Reports and Traces
+      - name: Upload reports, traces and RCA artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -66,11 +74,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Check Test Result Status
+      # Final gate: artifacts are uploaded first, then the job reflects the real outcome.
+      - name: Propagate status
         if: always()
-        # If the tests step failed, this step will fail the whole pipeline AFTER artifacts are uploaded.
+        env:
+          TYPECHECK: ${{ steps.typecheck.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
         run: |
-          if [ "${{ steps.tests.outcome }}" == "failure" ]; then
-            echo "Tests failed. Please check the RCA report."
+          echo "typecheck=$TYPECHECK tests=$TESTS"
+          if [ "$TYPECHECK" != "success" ] || [ "$TESTS" != "success" ]; then
+            echo "Failing: see reports/rca/rca-summary.md"
             exit 1
           fi

@@ -15,11 +15,7 @@ export async function attachEvidence(
   await testInfo.attach(name, { body, contentType });
 }
 
-export async function captureScenarioScreenshot(
-  page: Page,
-  testInfo: TestInfo,
-  scenarioId: string,
-): Promise<void> {
+export async function captureScenarioScreenshot(page: Page, testInfo: TestInfo, scenarioId: string): Promise<void> {
   const safe = scenarioId.replace(/[^A-Za-z0-9_-]/g, '_');
   const buf = await page.screenshot({ fullPage: true });
   await testInfo.attach(`screenshot-${safe}`, { body: buf, contentType: 'image/png' });

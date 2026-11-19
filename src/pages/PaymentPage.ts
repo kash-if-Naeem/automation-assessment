@@ -1,4 +1,5 @@
 import { Locator } from '@playwright/test';
+import path from 'path';
 import { BasePage } from './BasePage';
 
 export class PaymentPage extends BasePage {
@@ -9,16 +10,16 @@ export class PaymentPage extends BasePage {
   readonly expiryYear: Locator = this.page.locator('input[data-qa="expiry-year"]');
   readonly payButton: Locator = this.page.getByRole('button', { name: /pay and confirm order/i });
   readonly orderPlacedHeading: Locator = this.page.getByText(/order placed!/i);
+  readonly orderConfirmed: Locator = this.page.getByText(/congratulations! your order has been confirmed!/i);
   readonly downloadInvoice: Locator = this.page.getByRole('link', { name: /download invoice/i });
-  readonly continueButton: Locator = this.page.getByRole('link', { name: /continue/i });
 
   /**
-   * Fill ONLY dummy test-card details. These are invented values valid only on this
-   * practice site — never real card data, never personal data.
+   * Fills ONLY invented dummy card details for this practice site (no real card data).
+   * 4111 1111 1111 1111 is a widely published test number, not a real account.
    */
   async payWithDummyCard(nameOnCard: string): Promise<void> {
     await this.nameOnCard.fill(nameOnCard);
-    await this.cardNumber.fill('4111 1111 1111 1111');
+    await this.cardNumber.fill('4111111111111111');
     await this.cvc.fill('123');
     await this.expiryMonth.fill('12');
     await this.expiryYear.fill('2030');
@@ -30,14 +31,13 @@ export class PaymentPage extends BasePage {
     await this.orderPlacedHeading.waitFor({ state: 'visible' });
   }
 
-  async downloadInvoiceFile(): Promise<string> {
-    const [download] = await Promise.all([
-      this.page.waitForEvent('download'),
-      this.downloadInvoice.click(),
-    ]);
-    const path = await download.path();
-    if (!path) throw new Error('Invoice download returned no path');
-    await this.logAction(`downloaded invoice to ${path}`);
-    return path;
+  /** Saves the invoice into dir via the Playwright download event. */
+  async downloadInvoiceTo(dir: string): Promise<{ filePath: string; suggestedFilename: string }> {
+    const [download] = await Promise.all([this.page.waitForEvent('download'), this.downloadInvoice.click()]);
+    const suggestedFilename = download.suggestedFilename();
+    const filePath = path.join(dir, suggestedFilename);
+    await download.saveAs(filePath);
+    await this.logAction(`saved invoice ${suggestedFilename}`);
+    return { filePath, suggestedFilename };
   }
 }

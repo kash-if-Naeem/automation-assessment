@@ -1,6 +1,6 @@
 {
   "name": "qa-ai-level3",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "AI Level-3 QE: Playwright + TypeScript automation with agentic RCA for Automation Exercise",
   "private": true,
   "engines": {
@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "playwright test",
+    "test:list": "playwright test --list",
     "test:ui": "playwright test tests/ui",
     "test:api": "playwright test tests/api",
     "test:integration": "playwright test tests/integration",

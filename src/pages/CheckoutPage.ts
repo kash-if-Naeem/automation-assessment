@@ -28,7 +28,7 @@ export class CheckoutPage extends BasePage {
     return text
       .split('\n')
       .map((l) => l.trim())
-      .filter((l) => l.length > 0);
+      .filter((l) => l.length > 0 && !/your (delivery|billing) address/i.test(l));
   }
 
   async fillComment(text: string): Promise<void> {

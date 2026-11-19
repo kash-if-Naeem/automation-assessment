@@ -1,66 +1,71 @@
-import { test as base, APIRequestContext } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
+import { AutomationExerciseApi } from '../api/client';
+import { env } from '../../config/environment';
+import { AuthPage } from '../pages/AuthPage';
+import { CleanupRegistry } from '../utils/cleanup';
+import { redact } from '../utils/logger';
 import { TestUser, generateTestUser } from './user-data';
 
 export interface AccountFixtures {
   newUser: TestUser;
-  apiContext: APIRequestContext;
+  api: AutomationExerciseApi;
+  /** Registers through the UI, tracks the account for teardown, and returns it. */
   registerUser: (user?: TestUser) => Promise<TestUser>;
+  /** Teardown registry: tests call track() for accounts they create themselves. */
+  accountCleanup: { track: (u: TestUser) => void };
 }
 
 export const test = base.extend<AccountFixtures>({
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires an object pattern here
   newUser: async ({}, use) => {
     await use(generateTestUser());
   },
 
-  apiContext: async ({ playwright, baseURL }, use) => {
-    const apiRoot = process.env.API_URL ?? 'https://automationexercise.com/api';
+  api: async ({ playwright }, use) => {
     const ctx = await playwright.request.newContext({
-      baseURL: apiRoot,
+      baseURL: env.apiUrl.endsWith('/') ? env.apiUrl : `${env.apiUrl}/`,
       extraHTTPHeaders: { Accept: 'application/json' },
     });
-    await use(ctx);
+    await use(new AutomationExerciseApi(ctx));
     await ctx.dispose();
   },
 
-  registerUser: async ({ page, newUser, baseURL }, use) => {
-    const registered: TestUser[] = [];
+  // Auto fixture: teardown runs on pass AND fail. Each tracked account is deleted through
+  // the public deleteAccount endpoint (API 12), and the status is attached as evidence.
+  accountCleanup: [
+    async ({ api }, use, testInfo) => {
+      const registry = new CleanupRegistry();
+      await use({
+        track: (u: TestUser) =>
+          registry.register(`deleteAccount ${u.email}`, async () => {
+            const { body } = await api.deleteAccount(u.email, u.password);
+            if (body.responseCode !== 200) throw new Error(`responseCode ${body.responseCode}`);
+          }),
+      });
+      const status = await registry.runAll();
+      await testInfo.attach('cleanup-status.json', {
+        body: redact(JSON.stringify(status, null, 2)),
+        contentType: 'application/json',
+      });
+      if (status.failed.length > 0) {
+        testInfo.annotations.push({ type: 'cleanup-failed', description: `${status.failed.length} account(s)` });
+      }
+    },
+    { auto: true },
+  ],
 
-    const fn = async (user?: TestUser): Promise<TestUser> => {
+  registerUser: async ({ page, newUser, accountCleanup }, use) => {
+    await use(async (user?: TestUser) => {
       const u = user ?? newUser;
-      await page.goto(`${baseURL}/login`);
-      await page.locator('input[data-qa="signup-name"]').fill(u.name);
-      await page.locator('input[data-qa="signup-email"]').fill(u.email);
-      await page.getByRole('button', { name: 'Signup' }).click();
-      
-      // Complete the account-detail form
-      await page.locator(u.title === 'Mr' ? '#id_gender1' : '#id_gender2').check();
-      await page.locator('input[data-qa="password"]').fill(u.password);
-      await page.locator('select[data-qa="days"]').selectOption(u.birthDay);
-      await page.locator('select[data-qa="months"]').selectOption(u.birthMonth);
-      await page.locator('select[data-qa="years"]').selectOption(u.birthYear);
-      await page.locator('input[data-qa="first_name"]').fill(u.firstName);
-      await page.locator('input[data-qa="last_name"]').fill(u.lastName);
-      await page.locator('input[data-qa="company"]').fill(u.company);
-      await page.locator('input[data-qa="address"]').fill(u.address1);
-      await page.locator('input[data-qa="address2"]').fill(u.address2);
-      await page.locator('select[data-qa="country"]').selectOption(u.country);
-      await page.locator('input[data-qa="state"]').fill(u.state);
-      await page.locator('input[data-qa="city"]').fill(u.city);
-      await page.locator('input[data-qa="zipcode"]').fill(u.zipcode);
-      await page.locator('input[data-qa="mobile_number"]').fill(u.mobileNumber);
-      
-      await page.getByRole('button', { name: /create account/i }).click();
-      await page.getByText('Account Created!').waitFor();
-      registered.push(u);
+      const auth = new AuthPage(page);
+      await auth.open();
+      await auth.startSignup(u.name, u.email);
+      await auth.completeRegistration(u);
+      await expect(page.getByText('Account Created!')).toBeVisible();
+      accountCleanup.track(u);
+      await page.getByRole('link', { name: /continue/i }).click();
       return u;
-    };
-
-    await use(fn);
-
-    // Cleanup (log only, no public delete endpoint)
-    for (const u of registered) {
-      console.log(`[cleanup] account ${u.email} — no public delete endpoint; marked disposable`);
-    }
+    });
   },
 });
 

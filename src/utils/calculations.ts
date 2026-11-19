@@ -1,17 +1,24 @@
-/** Parse a price string like "Rs. 500" or "$29.99" into a number. */
+/**
+ * Parse the first number in a price such as "Rs. 1,500", "Rs. 500" or "$29.99".
+ * Currency symbols and the "." in "Rs." must not be kept, or "Rs. 2000" becomes 0.2.
+ */
 export function parsePrice(raw: string): number {
-  const cleaned = raw.replace(/[^\d.]/g, '');
-  const n = Number(cleaned);
-  if (Number.isNaN(n)) throw new Error(`Cannot parse price from "${raw}"`);
-  return n;
+  const match = raw.replace(/,/g, '').match(/\d+(\.\d+)?/);
+  if (!match) throw new Error(`Cannot parse price from "${raw}"`);
+  return Number(match[0]);
 }
 
-/** Assert-safe integer comparison for line totals. */
+/** Round a line total to cents. */
 export function expectedLineTotal(unitPrice: number, quantity: number): number {
   return Math.round(unitPrice * quantity * 100) / 100;
 }
 
+/** Sum of line totals, rounded to cents. */
 export function expectedCartTotal(lines: Array<{ unitPrice: number; quantity: number }>): number {
-  const sum = lines.reduce((acc, l) => acc + l.unitPrice * l.quantity, 0);
-  return Math.round(sum * 100) / 100;
+  return Math.round(lines.reduce((acc, l) => acc + l.unitPrice * l.quantity, 0) * 100) / 100;
+}
+
+/** Collapse whitespace so UI text can be compared with API and fixture text. */
+export function norm(s: string): string {
+  return s.replace(/\s+/g, ' ').trim();
 }

@@ -4,25 +4,21 @@ import { BasePage } from './BasePage';
 export interface ProductSummary {
   name: string;
   price: string;
-  productId: string;
 }
 
 export class ProductsPage extends BasePage {
   readonly searchInput: Locator = this.page.locator('input#search_product');
   readonly searchButton: Locator = this.page.locator('button#submit_search');
   readonly searchedProductsHeading: Locator = this.page.getByRole('heading', { name: /searched products/i });
-  readonly allProductsHeading: Locator = this.page.getByRole('heading', { name: /all products/i });
   readonly productCards: Locator = this.page.locator('.features_items .product-image-wrapper');
   readonly viewCartModalLink: Locator = this.page.getByRole('link', { name: /view cart/i });
   readonly continueShopping: Locator = this.page.getByRole('button', { name: /continue shopping/i });
 
   async open(): Promise<void> {
     await this.goto('/products');
-    await this.waitForReady();
   }
 
   protected async waitForReady(): Promise<void> {
-    // More robust than heading text, as some pages might not have the exact heading
     await this.page.locator('.features_items').waitFor({ state: 'visible' });
   }
 
@@ -36,22 +32,33 @@ export class ProductsPage extends BasePage {
     return this.productCards.count();
   }
 
-  async firstProduct(): Promise<ProductSummary> {
-    const card = this.productCards.first();
+  async summaryAt(index: number): Promise<ProductSummary> {
+    const card = this.productCards.nth(index);
     const name = (await card.locator('.productinfo p').textContent())?.trim() ?? '';
     const price = (await card.locator('.productinfo h2').textContent())?.trim() ?? '';
-    const id = await card.getAttribute('data-product-id').catch(() => null);
-    return { name, price, productId: id ?? '' };
+    return { name, price };
   }
 
-  async addFirstProductToCart(): Promise<ProductSummary> {
-    const summary = await this.firstProduct();
-    const card = this.productCards.first();
+  async firstProduct(): Promise<ProductSummary> {
+    return this.summaryAt(0);
+  }
+
+  /** Hover to reveal the overlay "Add to cart" button, click it, and wait for the cart modal. */
+  async addProductAt(index: number): Promise<ProductSummary> {
+    const summary = await this.summaryAt(index);
+    const card = this.productCards.nth(index);
     await card.hover();
-    await card.getByText(/add to cart/i).first().click();
+    await card
+      .getByText(/add to cart/i)
+      .first()
+      .click();
     await this.viewCartModalLink.waitFor({ state: 'visible' });
     await this.logAction(`added to cart: ${summary.name}`);
     return summary;
+  }
+
+  async addFirstProductToCart(): Promise<ProductSummary> {
+    return this.addProductAt(0);
   }
 
   async viewCartFromModal(): Promise<void> {
@@ -63,21 +70,32 @@ export class ProductsPage extends BasePage {
   }
 
   async openFirstProductDetail(): Promise<void> {
-    await this.productCards.first().getByRole('link', { name: /view product/i }).click();
-    await this.waitForReady();
+    await this.productCards
+      .first()
+      .getByRole('link', { name: /view product/i })
+      .click();
   }
 
   async openCategory(categoryName: string, subCategory?: string): Promise<void> {
-    await this.page.getByRole('link', { name: new RegExp(categoryName, 'i') }).first().click();
+    await this.page
+      .getByRole('link', { name: new RegExp(categoryName, 'i') })
+      .first()
+      .click();
     if (subCategory) {
-      await this.page.getByRole('link', { name: new RegExp(subCategory, 'i') }).first().click();
+      await this.page
+        .getByRole('link', { name: new RegExp(subCategory, 'i') })
+        .first()
+        .click();
     }
     await this.logAction(`opened category ${categoryName}${subCategory ? '/' + subCategory : ''}`);
   }
 
   async openBrand(brandName: string): Promise<void> {
-    // Scope to the brand sidebar to avoid strict mode violations
-    await this.page.locator('.brands_products').getByRole('link', { name: new RegExp(brandName, 'i') }).first().click();
+    await this.page
+      .locator('.brands_products')
+      .getByRole('link', { name: new RegExp(brandName, 'i') })
+      .first()
+      .click();
     await this.logAction(`opened brand ${brandName}`);
   }
 }

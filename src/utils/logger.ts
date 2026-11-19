@@ -13,8 +13,7 @@ export function redact(input: string): string {
 }
 
 export const log = {
-  info: (msg: string, meta?: unknown) =>
-    console.log(`[INFO] ${redact(msg)}`, meta ? redact(JSON.stringify(meta)) : ''),
+  info: (msg: string, meta?: unknown) => console.log(`[INFO] ${redact(msg)}`, meta ? redact(JSON.stringify(meta)) : ''),
   warn: (msg: string, meta?: unknown) =>
     console.warn(`[WARN] ${redact(msg)}`, meta ? redact(JSON.stringify(meta)) : ''),
   error: (msg: string, meta?: unknown) =>

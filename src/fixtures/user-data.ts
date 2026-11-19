@@ -21,16 +21,14 @@ export interface TestUser {
 }
 
 /**
- * Generates a unique, disposable test user.
- * Every call produces a fresh identity to guarantee per-worker isolation (no shared mutable account).
- * The email embeds a UUID so cleanup can find it if needed, and to avoid duplicate-registration collisions.
+ * Generates a unique, disposable test user. Every call is a fresh identity so parallel
+ * workers never share an account. Emails use the reserved .invalid domain.
  */
 export function generateTestUser(prefix = 'qa'): TestUser {
   const id = randomUUID().split('-')[0];
-  const email = `${prefix}.${id}@example-test.invalid`;
   return {
     name: `QA ${id}`,
-    email,
+    email: `${prefix}.${id}@example-test.invalid`,
     password: `Pw-${id}-Aa1!`,
     title: 'Mr',
     firstName: 'QA',
@@ -48,12 +46,3 @@ export function generateTestUser(prefix = 'qa'): TestUser {
     birthYear: '1990',
   };
 }
-
-/**
- * Known seeded credentials used by the public site (documented reference account).
- * Prefer generateTestUser() for all new tests to preserve isolation.
- */
-export const SEEDED_USER = {
-  email: 'seeded.reference@example-test.invalid',
-  password: 'SeededRef!123',
-} as const;

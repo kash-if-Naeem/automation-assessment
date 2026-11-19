@@ -11,9 +11,9 @@ export class AuthPage extends BasePage {
   readonly signupEmail: Locator = this.page.locator('input[data-qa="signup-email"]');
   readonly signupButton: Locator = this.page.getByRole('button', { name: /^signup$/i });
 
+  // Exposed as locators so tests can use auto-retrying web-first assertions.
   readonly loginError: Locator = this.page.getByText(/your email or password is incorrect/i);
   readonly signupError: Locator = this.page.getByText(/email address already exist/i);
-  readonly newUserSignupHeading: Locator = this.page.getByRole('heading', { name: /new user signup/i });
 
   async open(): Promise<void> {
     await this.goto('/login');
@@ -34,6 +34,7 @@ export class AuthPage extends BasePage {
     await this.logAction('started signup');
   }
 
+  /** Account-information form. Used by the registerUser fixture and by AE-01 directly. */
   async completeRegistration(u: TestUser): Promise<void> {
     await this.page.locator(u.title === 'Mr' ? '#id_gender1' : '#id_gender2').check();
     await this.page.locator('input[data-qa="password"]').fill(u.password);
@@ -52,13 +53,5 @@ export class AuthPage extends BasePage {
     await this.page.locator('input[data-qa="mobile_number"]').fill(u.mobileNumber);
     await this.page.getByRole('button', { name: /create account/i }).click();
     await this.logAction('completed registration');
-  }
-
-  async isLoginErrorVisible(): Promise<boolean> {
-    return await this.loginError.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
-  }
-
-  async isSignupErrorVisible(): Promise<boolean> {
-    return await this.signupError.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
   }
 }
