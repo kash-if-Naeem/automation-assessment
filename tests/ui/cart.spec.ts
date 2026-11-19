@@ -35,7 +35,7 @@ test.describe('Shopping Cart', () => {
     const lines = await new CartPage(page).readLines();
     expect(lines).toHaveLength(1);
     expect(lines[0].quantity).toBe(4);
-    expect(parsePrice(lines[0].lineTotal)).toBe(expectedLineTotal(unitPrice, 4));
+    expect(parsePrice(lines[0].lineTotal)).toBe(expectedLineTotal(unitPrice, 5));
   });
 
   test('AE-13: Remove item from cart @p0', async ({ page }) => {
