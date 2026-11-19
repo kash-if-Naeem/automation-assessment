@@ -50,12 +50,11 @@ test.describe('Ancillary Features (Reviews, Contact, Subscriptions)', () => {
     await home.open();
     await home.recommendedHeading.scrollIntoViewIfNeeded();
     await expect(home.recommendedHeading).toBeVisible();
-    const itemName = norm((await home.recommendedCarousel.locator('.productinfo p').first().textContent()) ?? '');
+    // Only the active carousel slide is visible; inactive slides hold hidden duplicates.
+    const activeSlide = home.recommendedCarousel.locator('.item.active');
+    const itemName = norm(await activeSlide.locator('.productinfo p').first().innerText());
     expect(itemName).not.toBe('');
-    await home.recommendedCarousel
-      .getByText(/add to cart/i)
-      .first()
-      .click();
+    await activeSlide.locator('a.add-to-cart').first().click();
     await page.getByRole('link', { name: /view cart/i }).click();
     const lines = await new CartPage(page).readLines();
     expect(lines.map((l) => norm(l.description))).toContain(itemName);

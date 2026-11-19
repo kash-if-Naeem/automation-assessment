@@ -52,7 +52,7 @@ test.describe('Checkout & Orders', () => {
       await products.viewCartFromModal();
       const lines = await cart.readLines();
       expect(lines).toHaveLength(2);
-      const line2 = lines.find((l) => norm(l.description) === norm(second.name));
+      const line2 = lines.find((l) => l.productId === second.productId);
       expect(line2, 'second product present in cart').toBeDefined();
       expect(line2!.quantity).toBe(1);
       expect(parsePrice(line2!.lineTotal)).toBe(expectedLineTotal(parsePrice(second.price), 1));

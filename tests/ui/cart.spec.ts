@@ -15,9 +15,11 @@ test.describe('Shopping Cart', () => {
 
     const lines = await new CartPage(page).readLines();
     expect(lines).toHaveLength(2);
-    const descriptions = lines.map((l) => norm(l.description));
-    expect(descriptions).toContain(norm(first.name));
-    expect(descriptions).toContain(norm(second.name));
+    // Identity by product id, not by display text (listing text can differ from the cart text).
+    const ids = lines.map((l) => l.productId);
+    expect(first.productId).not.toBe('');
+    expect(second.productId).not.toBe(first.productId);
+    expect(ids).toEqual(expect.arrayContaining([first.productId, second.productId]));
   });
 
   test('AE-12: Quantity 4 gives the correct line total @p0', async ({ page }) => {
@@ -59,6 +61,6 @@ test.describe('Shopping Cart', () => {
     await cart.open();
     const lines = await cart.readLines();
     expect(lines).toHaveLength(1);
-    expect(norm(lines[0].description)).toBe(norm(item.name));
+    expect(lines[0].productId).toBe(item.productId);
   });
 });

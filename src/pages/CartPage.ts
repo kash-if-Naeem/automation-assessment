@@ -5,6 +5,8 @@ import { parsePrice } from '../utils/calculations';
 export interface CartLine {
   /** Product name only (the category line in the same cell is excluded). */
   description: string;
+  /** Id from the product link (/product_details/<id>). */
+  productId: string;
   unitPrice: string;
   quantity: number;
   lineTotal: string;
@@ -51,8 +53,10 @@ export class CartPage extends BasePage {
     const out: CartLine[] = [];
     for (let i = 0; i < n; i++) {
       const row = this.cartRows.nth(i);
+      const href = (await row.locator('a[href*="/product_details/"]').first().getAttribute('href')) ?? '';
       out.push({
         description: (await row.locator('.cart_description h4, .cart_description a').first().innerText()).trim(),
+        productId: href.match(/(\d+)\/?$/)?.[1] ?? '',
         unitPrice: (await row.locator('.cart_price').innerText()).trim(),
         quantity: Number((await row.locator('.cart_quantity').innerText()).trim()),
         lineTotal: (await row.locator('.cart_total').innerText()).trim(),

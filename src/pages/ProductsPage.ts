@@ -4,6 +4,8 @@ import { BasePage } from './BasePage';
 export interface ProductSummary {
   name: string;
   price: string;
+  /** Stable id from the card's add-to-cart link; the reliable identity for cross-checks. */
+  productId: string;
 }
 
 export class ProductsPage extends BasePage {
@@ -34,9 +36,11 @@ export class ProductsPage extends BasePage {
 
   async summaryAt(index: number): Promise<ProductSummary> {
     const card = this.productCards.nth(index);
-    const name = (await card.locator('.productinfo p').textContent())?.trim() ?? '';
-    const price = (await card.locator('.productinfo h2').textContent())?.trim() ?? '';
-    return { name, price };
+    // Visible text only (innerText): the card can carry hidden duplicates.
+    const name = (await card.locator('.productinfo p').first().innerText()).trim();
+    const price = (await card.locator('.productinfo h2').first().innerText()).trim();
+    const productId = (await card.locator('a.add-to-cart').first().getAttribute('data-product-id')) ?? '';
+    return { name, price, productId };
   }
 
   async firstProduct(): Promise<ProductSummary> {
@@ -53,7 +57,7 @@ export class ProductsPage extends BasePage {
       .first()
       .click();
     await this.viewCartModalLink.waitFor({ state: 'visible' });
-    await this.logAction(`added to cart: ${summary.name}`);
+    await this.logAction(`added to cart: ${summary.name} (id ${summary.productId})`);
     return summary;
   }
 
