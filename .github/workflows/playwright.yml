@@ -115,6 +115,11 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      # Offline guard: replays recorded real failures (escape codes and all) through the
+      # classifier. Catches a rule regression even when the public site is unavailable.
+      - name: RCA classifier self-test
+        run: npm run rca:selftest
+
       # These tests are expected to fail: that is the injected fault.
       - name: Run injected faults
         continue-on-error: true

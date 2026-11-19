@@ -82,9 +82,9 @@ function main(): void {
     scenario_id: id,
     classification: rec.classification,
     confidence: rec.confidence,
-    expected: EXPECTED[id].accept,
-    correct: EXPECTED[id].accept.includes(rec.classification),
-    rationale: EXPECTED[id].rationale,
+    expected: expected[id].accept,
+    correct: expected[id].accept.includes(rec.classification),
+    rationale: expected[id].rationale,
   }));
 
   const correct = rows.filter((r) => r.correct).length;

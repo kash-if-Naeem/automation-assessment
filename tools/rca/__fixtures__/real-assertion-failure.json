@@ -1,0 +1,36 @@
+{
+  "note": "Recorded verbatim from a real Playwright run of the FI-01 injected fault. Keep the ANSI escape codes: they are the regression this fixture guards.",
+  "recorded_at": "2026-11-20",
+  "source": "AE-12 with expectedLineTotal(unitPrice, 5) injected",
+  "contains_ansi": true,
+  "expected_classification": "TEST_SCRIPT_DEFECT",
+  "record": {
+    "schema_version": "1.2",
+    "scenario_id": "AE-12",
+    "test_title": "AE-12: Quantity 4 gives the correct line total @p0",
+    "file": "ui/cart.spec.ts",
+    "outcome": "unexpected",
+    "risk": "P0",
+    "injected": false,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m2500\u001b[39m\nReceived: \u001b[31m2000\u001b[39m",
+    "stack_top": [
+      "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m",
+      "",
+      "Expected: \u001b[32m2500\u001b[39m"
+    ],
+    "stderr_tail": [],
+    "console_errors": [],
+    "network_failures": [],
+    "artifacts": {
+      "trace": "<repo>/test-results/trace.zip"
+    },
+    "changed_files_in_head": ["tests/ui/cart.spec.ts"],
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "fixture",
+      "collected_at": "2026-11-20T00:00:00.000Z"
+    }
+  }
+}

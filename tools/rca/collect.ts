@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import { redact } from '../../src/utils/logger';
+import { redact, stripAnsi } from '../../src/utils/logger';
 
 /**
  * Deterministic failure collector (RCA Detect + Collect stages). Reads Playwright's JSON
@@ -89,6 +89,11 @@ function scenarioIdOf(title: string): string {
 function riskOf(title: string): 'P0' | 'P1' | 'P2' | 'UNKNOWN' {
   const m = title.match(/@p([012])(?![0-9])/i);
   return m ? (`P${m[1]}` as 'P0' | 'P1' | 'P2') : 'UNKNOWN';
+}
+
+/** Evidence is stored stripped of colour codes and redacted. */
+function clean(text: string): string {
+  return redact(stripAnsi(text));
 }
 
 /** Attribute counts from the JUnit XML, used as a cross-check on the JSON report. */
@@ -224,18 +229,18 @@ function collect(): void {
         failures.push({
           schema_version: '1.1',
           scenario_id: scenarioIdOf(spec.title),
-          test_title: redact(spec.title),
+          test_title: clean(spec.title),
           file,
           outcome: test.status,
           risk: riskOf(spec.title),
           injected: /@fault|FI-\d+/.test(spec.title),
           attempts: results.length,
           retry_count: Math.max(results.length - 1, 0),
-          error_message: redact(message) + snapshotMarker(trace),
-          stack_top: redact(String(error.stack ?? ''))
+          error_message: clean(message) + snapshotMarker(trace),
+          stack_top: clean(String(error.stack ?? ''))
             .split('\n')
             .slice(0, 3),
-          stderr_tail: redact(stderr.join('')).split('\n').slice(-20),
+          stderr_tail: clean(stderr.join('')).split('\n').slice(-20),
           console_errors: readJsonAttachment(attachments, 'console-errors.json'),
           network_failures: readJsonAttachment(attachments, 'network-failures.json'),
           artifacts: {
