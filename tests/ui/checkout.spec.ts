@@ -109,8 +109,9 @@ test.describe('Checkout & Orders', () => {
     });
   });
 
-  test('AE-16: Address consistency on checkout (delivery = billing = fixture) @p0', async ({
+  test('AE-16: Address consistency across fixture, checkout UI and API 14 @p0', async ({
     page,
+    api,
     registerUser,
     newUser,
   }) => {
@@ -125,8 +126,24 @@ test.describe('Checkout & Orders', () => {
     await expect(checkout.deliveryAddress).toBeVisible();
     const delivery = (await checkout.readAddress('delivery')).join(' ');
     const billing = (await checkout.readAddress('billing')).join(' ');
+
+    // Oracle 1: the rendered delivery block carries every field of the source fixture.
     expectAddressMatchesFixture(delivery, newUser);
+    // Oracle 2: billing is identical to delivery (headings excluded by readAddress).
     expect(norm(billing)).toBe(norm(delivery));
+
+    // Oracle 3 (API 14): the stored record matches the same fixture, so the UI is not
+    // rendering something the backend never persisted.
+    const detail = await api.getUserDetailByEmail(newUser.email);
+    expect(detail.body.responseCode).toBe(200);
+    const stored = detail.body.user as Record<string, string> | undefined;
+    expect(stored, 'getUserDetailByEmail returned a user record').toBeDefined();
+    expect(stored!.email).toBe(newUser.email);
+    expect(norm(stored!.address1)).toBe(norm(newUser.address1));
+    expect(norm(stored!.city)).toBe(norm(newUser.city));
+    expect(norm(stored!.state)).toBe(norm(newUser.state));
+    expect(norm(stored!.zipcode)).toBe(norm(newUser.zipcode));
+    expect(norm(stored!.country)).toBe(norm(newUser.country));
   });
 
   test('AE-17: Invoice download after a completed order @p1', async ({ page, registerUser, newUser }, testInfo) => {

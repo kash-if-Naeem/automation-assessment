@@ -1,0 +1,292 @@
+[
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-02",
+    "test_title": "FI-02: injected abort of the products page request @fault",
+    "classification": "ENVIRONMENT_OR_NETWORK",
+    "confidence": 0.9,
+    "status": "HYPOTHESIS_PENDING_REVIEW",
+    "symptom": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products",
+    "hypotheses": [
+      {
+        "classification": "ENVIRONMENT_OR_NETWORK",
+        "confidence": 0.9,
+        "rule": "network-error-code",
+        "evidence_for": ["error message contains net::ERR_*", "test is an injected fault (@fault)"],
+        "evidence_against": ["no product assertion reached"]
+      }
+    ],
+    "evidence": [
+      {
+        "type": "error",
+        "detail": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products"
+      },
+      {
+        "type": "stack",
+        "detail": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products\nCall log:\n  - navigating to \"https://automationexercise.com/products\", waiting until \"domcontentloaded\""
+      },
+      {
+        "type": "trace",
+        "path": "<repo>/test-results/fault-fi-02-network-Fault--fbe03-products-page-request-fault-chromium/trace.zip"
+      },
+      {
+        "type": "screenshot",
+        "path": "<repo>/test-results/fault-fi-02-network-Fault--fbe03-products-page-request-fault-chromium/test-failed-1.png"
+      },
+      {
+        "type": "dom",
+        "path": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+      },
+      {
+        "type": "console",
+        "detail": "none captured"
+      },
+      {
+        "type": "network",
+        "detail": "1 failed/error response(s): net::ERR_FAILED https://automationexercise.com/products"
+      },
+      {
+        "type": "diff",
+        "detail": "HEAD touched: docs/assumptions-log.md, docs/evidence/fi-02/collection-status.json, docs/evidence/fi-02/failures.json, docs/evidence/fi-02/rca-report.json, docs/evidence/fi-02/rca-summary.md, docs/quality-scorecard.md"
+      },
+      {
+        "type": "run",
+        "detail": "local @ d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b"
+      }
+    ],
+    "validation": "Re-run isolated test: npx playwright test -g \"FI-02\". Inspect the trace before any code change.",
+    "recommended_action": "Reviewer verifies evidence, then decides. Any patch goes to a separate branch.",
+    "requires_human_approval": true,
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  },
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-03",
+    "test_title": "FI-03: delayed products response breaks a short synchronisation budget (attempt 1/3) @fault",
+    "classification": "TIMING_OR_FLAKINESS",
+    "confidence": 0.78,
+    "status": "HYPOTHESIS_PENDING_REVIEW",
+    "symptom": "Error: expect(locator).toBeVisible() failed",
+    "hypotheses": [
+      {
+        "classification": "TIMING_OR_FLAKINESS",
+        "confidence": 0.78,
+        "rule": "locator-timeout-with-slow-response",
+        "evidence_for": [
+          "slowest captured response 11047ms on https://automationexercise.com/products",
+          "element was awaited, not absent"
+        ],
+        "evidence_against": ["a missing element would also time out; confirm in the trace"]
+      },
+      {
+        "classification": "LOCATOR_OR_UI_CHANGE",
+        "confidence": 0.45,
+        "rule": "locator-timeout",
+        "evidence_for": ["Playwright reported an unresolved locator"],
+        "evidence_against": ["1 slow response(s) captured, so the element may have been late rather than absent"]
+      }
+    ],
+    "evidence": [
+      {
+        "type": "error",
+        "detail": "Error: expect(locator).toBeVisible() failed"
+      },
+      {
+        "type": "stack",
+        "detail": "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('.features_items')"
+      },
+      {
+        "type": "trace",
+        "path": "<repo>/test-results/fault-fi-03-timing-Fault-i-cca48-on-budget-attempt-1-3-fault-chromium/trace.zip"
+      },
+      {
+        "type": "screenshot",
+        "path": "<repo>/test-results/fault-fi-03-timing-Fault-i-cca48-on-budget-attempt-1-3-fault-chromium/test-failed-1.png"
+      },
+      {
+        "type": "dom",
+        "path": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+      },
+      {
+        "type": "console",
+        "detail": "3 entry/entries: Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st"
+      },
+      {
+        "type": "network",
+        "detail": "4 failed/error response(s): 200 https://automationexercise.com/products | mixed-content http://fonts.googleapis.com/css | mixed-content http://fonts.googleapis.com/css"
+      },
+      {
+        "type": "diff",
+        "detail": "HEAD touched: docs/assumptions-log.md, docs/evidence/fi-02/collection-status.json, docs/evidence/fi-02/failures.json, docs/evidence/fi-02/rca-report.json, docs/evidence/fi-02/rca-summary.md, docs/quality-scorecard.md"
+      },
+      {
+        "type": "run",
+        "detail": "local @ d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b"
+      }
+    ],
+    "validation": "Re-run isolated test: npx playwright test -g \"FI-03\". Inspect the trace before any code change.",
+    "recommended_action": "Reviewer verifies evidence, then decides. Any patch goes to a separate branch.",
+    "requires_human_approval": true,
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  },
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-03",
+    "test_title": "FI-03: delayed products response breaks a short synchronisation budget (attempt 2/3) @fault",
+    "classification": "TIMING_OR_FLAKINESS",
+    "confidence": 0.78,
+    "status": "HYPOTHESIS_PENDING_REVIEW",
+    "symptom": "Error: expect(locator).toBeVisible() failed",
+    "hypotheses": [
+      {
+        "classification": "TIMING_OR_FLAKINESS",
+        "confidence": 0.78,
+        "rule": "locator-timeout-with-slow-response",
+        "evidence_for": [
+          "slowest captured response 6736ms on https://automationexercise.com/products",
+          "element was awaited, not absent"
+        ],
+        "evidence_against": ["a missing element would also time out; confirm in the trace"]
+      },
+      {
+        "classification": "LOCATOR_OR_UI_CHANGE",
+        "confidence": 0.45,
+        "rule": "locator-timeout",
+        "evidence_for": ["Playwright reported an unresolved locator"],
+        "evidence_against": ["1 slow response(s) captured, so the element may have been late rather than absent"]
+      }
+    ],
+    "evidence": [
+      {
+        "type": "error",
+        "detail": "Error: expect(locator).toBeVisible() failed"
+      },
+      {
+        "type": "stack",
+        "detail": "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('.features_items')"
+      },
+      {
+        "type": "trace",
+        "path": "<repo>/test-results/fault-fi-03-timing-Fault-i-84f52-on-budget-attempt-2-3-fault-chromium/trace.zip"
+      },
+      {
+        "type": "screenshot",
+        "path": "<repo>/test-results/fault-fi-03-timing-Fault-i-84f52-on-budget-attempt-2-3-fault-chromium/test-failed-1.png"
+      },
+      {
+        "type": "dom",
+        "path": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+      },
+      {
+        "type": "console",
+        "detail": "3 entry/entries: Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st"
+      },
+      {
+        "type": "network",
+        "detail": "4 failed/error response(s): 200 https://automationexercise.com/products | mixed-content http://fonts.googleapis.com/css | mixed-content http://fonts.googleapis.com/css"
+      },
+      {
+        "type": "diff",
+        "detail": "HEAD touched: docs/assumptions-log.md, docs/evidence/fi-02/collection-status.json, docs/evidence/fi-02/failures.json, docs/evidence/fi-02/rca-report.json, docs/evidence/fi-02/rca-summary.md, docs/quality-scorecard.md"
+      },
+      {
+        "type": "run",
+        "detail": "local @ d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b"
+      }
+    ],
+    "validation": "Re-run isolated test: npx playwright test -g \"FI-03\". Inspect the trace before any code change.",
+    "recommended_action": "Reviewer verifies evidence, then decides. Any patch goes to a separate branch.",
+    "requires_human_approval": true,
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  },
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-03",
+    "test_title": "FI-03: delayed products response breaks a short synchronisation budget (attempt 3/3) @fault",
+    "classification": "TIMING_OR_FLAKINESS",
+    "confidence": 0.78,
+    "status": "HYPOTHESIS_PENDING_REVIEW",
+    "symptom": "Error: expect(locator).toBeVisible() failed",
+    "hypotheses": [
+      {
+        "classification": "TIMING_OR_FLAKINESS",
+        "confidence": 0.78,
+        "rule": "locator-timeout-with-slow-response",
+        "evidence_for": [
+          "slowest captured response 6253ms on https://automationexercise.com/products",
+          "element was awaited, not absent"
+        ],
+        "evidence_against": ["a missing element would also time out; confirm in the trace"]
+      },
+      {
+        "classification": "LOCATOR_OR_UI_CHANGE",
+        "confidence": 0.45,
+        "rule": "locator-timeout",
+        "evidence_for": ["Playwright reported an unresolved locator"],
+        "evidence_against": ["1 slow response(s) captured, so the element may have been late rather than absent"]
+      }
+    ],
+    "evidence": [
+      {
+        "type": "error",
+        "detail": "Error: expect(locator).toBeVisible() failed"
+      },
+      {
+        "type": "stack",
+        "detail": "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('.features_items')"
+      },
+      {
+        "type": "trace",
+        "path": "<repo>/test-results/fault-fi-03-timing-Fault-i-658d0-on-budget-attempt-3-3-fault-chromium/trace.zip"
+      },
+      {
+        "type": "screenshot",
+        "path": "<repo>/test-results/fault-fi-03-timing-Fault-i-658d0-on-budget-attempt-3-3-fault-chromium/test-failed-1.png"
+      },
+      {
+        "type": "dom",
+        "path": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+      },
+      {
+        "type": "console",
+        "detail": "3 entry/entries: Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st | Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure st"
+      },
+      {
+        "type": "network",
+        "detail": "5 failed/error response(s): 200 https://automationexercise.com/products | mixed-content http://fonts.googleapis.com/css | mixed-content http://fonts.googleapis.com/css"
+      },
+      {
+        "type": "diff",
+        "detail": "HEAD touched: docs/assumptions-log.md, docs/evidence/fi-02/collection-status.json, docs/evidence/fi-02/failures.json, docs/evidence/fi-02/rca-report.json, docs/evidence/fi-02/rca-summary.md, docs/quality-scorecard.md"
+      },
+      {
+        "type": "run",
+        "detail": "local @ d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b"
+      }
+    ],
+    "validation": "Re-run isolated test: npx playwright test -g \"FI-03\". Inspect the trace before any code change.",
+    "recommended_action": "Reviewer verifies evidence, then decides. Any patch goes to a separate branch.",
+    "requires_human_approval": true,
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  }
+]

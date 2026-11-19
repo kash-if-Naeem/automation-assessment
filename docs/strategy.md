@@ -18,6 +18,10 @@ We utilize the Page Object Model (POM) for UI isolation and typed fixtures for A
 
 ## 4. AI & RCA Strategy
 
-Failures are not just logged; they are triaged by a model-free RCA script. The script maps error signatures to 8 specific categories. Any confidence score below 90% triggers a mandatory human-in-the-loop review before patching.
+Failures are not just logged; they are triaged by a model-free RCA script. The script maps error signatures and
+collected evidence to the 8 categories. **Every** record carries `requires_human_approval: true` — no classification
+is ever treated as a verdict, and no patch is applied automatically. Confidence below **0.60**, or a tie between the
+two leading hypotheses, is reported as `UNKNOWN` instead of a category. The threshold and the rubric live in
+`skills/rca.md` and are enforced by `CONFIDENCE_FLOOR` in `tools/rca/analyze.ts`.
 
 The fuller, live-run-backed version is in [test-strategy-detailed.md](test-strategy-detailed.md).

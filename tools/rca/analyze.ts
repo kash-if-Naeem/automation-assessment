@@ -31,7 +31,7 @@ interface Hypothesis {
 }
 
 export interface RcaRecord {
-  schema_version: '1.0';
+  schema_version: '1.1';
   scenario_id: string;
   test_title: string;
   classification: Classification;
@@ -62,10 +62,23 @@ function changedFilesInHead(): string[] {
   }
 }
 
-function classify(f: FailureRecord, changed: string[]): RcaRecord {
+function classify(f: FailureRecord, changedFallback: string[]): RcaRecord {
   const msg = f.error_message;
   const hyps: Hypothesis[] = [];
   const hasTrace = !!f.artifacts.trace;
+  const changed = f.changed_files_in_head?.length ? f.changed_files_in_head : changedFallback;
+  const blocked = (f.network_failures ?? []).filter((n) => typeof n.status === 'number' && (n.status as number) >= 400);
+
+  // Rule 0: the test passed on retry. That is evidence of non-determinism, not of a product fault.
+  if (f.outcome === 'flaky') {
+    hyps.push({
+      classification: 'TIMING_OR_FLAKINESS',
+      confidence: 0.8,
+      rule: 'passed-on-retry',
+      evidence_for: [`test passed on retry (${f.retry_count} retry/retries over ${f.attempts} attempts)`],
+      evidence_against: ['an intermittent product or site fault can also pass on retry'],
+    });
+  }
 
   // Rule 1: browser-level network failure (includes test-controlled route aborts).
   if (/net::ERR_(FAILED|CONNECTION|NAME_NOT_RESOLVED|INTERNET_DISCONNECTED|ABORTED)/.test(msg)) {
@@ -96,6 +109,18 @@ function classify(f: FailureRecord, changed: string[]): RcaRecord {
     });
   }
 
+  // Rule 2b: captured responses show the site refused requests, independent of the assertion text.
+  if (blocked.length > 0) {
+    const codes = [...new Set(blocked.map((n) => n.status))].join(', ');
+    hyps.push({
+      classification: 'THIRD_PARTY_DEPENDENCY',
+      confidence: 0.75,
+      rule: 'captured-error-responses',
+      evidence_for: [`${blocked.length} captured response(s) with status ${codes} (network-failures.json)`],
+      evidence_against: ['a 4xx can also follow a bad request built by the test'],
+    });
+  }
+
   // Rule 3: non-JSON body with a non-5xx status, e.g. a wrong endpoint path returns an HTML 404.
   if (/non-json body \(http (?!5|403|429)\d{3}\)/i.test(msg)) {
     hyps.push({
@@ -107,27 +132,47 @@ function classify(f: FailureRecord, changed: string[]): RcaRecord {
     });
   }
 
-  // Rule 4: locator could not be resolved in time.
-  if (/waiting for (locator|getBy)|locator\.\w+: Timeout|element\(s\) not found/i.test(msg)) {
+  // Rule 4: an element did not resolve in time. Two causes look identical in the error text,
+  // so captured response timing is what separates "the element is missing" (locator or UI
+  // change) from "the element was late" (timing). Without that evidence, neither wins
+  // outright and the tie rule sends it to UNKNOWN for a human.
+  if (/waiting for (locator|getBy)|locator\.\w+: Timeout|toBeVisible|element\(s\) not found/i.test(msg)) {
+    const slow = (f.network_failures ?? []).filter((n) => n.slow === true);
+    const slowest = slow.sort((a, b) => Number(b.duration_ms ?? 0) - Number(a.duration_ms ?? 0))[0];
+
     hyps.push({
       classification: 'LOCATOR_OR_UI_CHANGE',
-      confidence: hasTrace ? 0.7 : 0.55,
+      confidence: slow.length ? 0.45 : hasTrace ? 0.7 : 0.55,
       rule: 'locator-timeout',
       evidence_for: ['Playwright reported an unresolved locator'],
-      evidence_against: [hasTrace ? 'trace attached; DOM not yet inspected by the analyzer' : 'no trace attached'],
+      evidence_against: [
+        slow.length
+          ? `${slow.length} slow response(s) captured, so the element may have been late rather than absent`
+          : hasTrace
+            ? 'trace attached; DOM not yet inspected by the analyzer'
+            : 'no trace attached',
+      ],
     });
+
     hyps.push({
       classification: 'TIMING_OR_FLAKINESS',
-      confidence: 0.4,
-      rule: 'locator-timeout-alt',
-      evidence_for: ['timeouts can also come from slow responses'],
-      evidence_against: ['locator timeout is the reported failure'],
+      confidence: slow.length ? 0.78 : 0.4,
+      rule: slow.length ? 'locator-timeout-with-slow-response' : 'locator-timeout-alt',
+      evidence_for: slow.length
+        ? [`slowest captured response ${slowest?.duration_ms}ms on ${slowest?.url}`, 'element was awaited, not absent']
+        : ['timeouts can also come from slow responses'],
+      evidence_against: slow.length
+        ? ['a missing element would also time out; confirm in the trace']
+        : ['no slow responses were captured for this test'],
     });
   }
 
   // Rule 5: expected-vs-received assertion mismatch.
   if (/expect\(received\)\.(toBe|toEqual|toContain|toHaveText|toBeCloseTo|toHaveCount|toMatch)/.test(msg)) {
-    const specChanged = changed.some((c) => c && f.file && f.file.endsWith(c.split('/').slice(-2).join('/')));
+    // The JSON report's file is repo-relative to testDir ("ui/cart.spec.ts"); git lists
+    // "tests/ui/cart.spec.ts". Compare on the normalised tail so the match is reliable.
+    const tail = (p: string) => p.replace(/\\/g, '/').split('/').slice(-2).join('/');
+    const specChanged = changed.some((c) => c && f.file && tail(c) === tail(f.file));
     hyps.push({
       classification: 'PRODUCT_DEFECT',
       confidence: 0.5,
@@ -164,7 +209,7 @@ function classify(f: FailureRecord, changed: string[]): RcaRecord {
   if (classification !== 'UNKNOWN' && confidence < CONFIDENCE_FLOOR) classification = 'UNKNOWN';
 
   return {
-    schema_version: '1.0',
+    schema_version: '1.1',
     scenario_id: f.scenario_id,
     test_title: f.test_title,
     classification,
@@ -176,6 +221,32 @@ function classify(f: FailureRecord, changed: string[]): RcaRecord {
       { type: 'error', detail: msg.split('\n')[0].slice(0, 300) },
       { type: 'stack', detail: f.stack_top.join('\n') },
       { type: 'trace', path: f.artifacts.trace ?? 'not available' },
+      { type: 'screenshot', path: f.artifacts.screenshot ?? 'not available' },
+      { type: 'dom', path: f.artifacts.dom_snapshot ?? 'not captured' },
+      {
+        type: 'console',
+        detail: (f.console_errors ?? []).length
+          ? `${f.console_errors.length} entry/entries: ${f.console_errors
+              .slice(0, 3)
+              .map((c) => String(c.text ?? '').slice(0, 120))
+              .join(' | ')}`
+          : 'none captured',
+      },
+      {
+        type: 'network',
+        detail: (f.network_failures ?? []).length
+          ? `${f.network_failures.length} failed/error response(s): ${f.network_failures
+              .slice(0, 3)
+              .map((n) => `${n.status ?? n.failure} ${n.url}`)
+              .join(' | ')}`
+          : 'none captured',
+      },
+      {
+        type: 'diff',
+        detail: (f.changed_files_in_head ?? []).length
+          ? `HEAD touched: ${f.changed_files_in_head.slice(0, 10).join(', ')}`
+          : 'no file list available for HEAD',
+      },
       { type: 'run', detail: `${f.detect.run_url} @ ${f.detect.commit_sha}` },
     ],
     validation: `Re-run isolated test: npx playwright test -g "${f.scenario_id}". Inspect the trace before any code change.`,

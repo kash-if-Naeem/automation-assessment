@@ -86,3 +86,58 @@ jobs:
             echo "Failing: see reports/rca/rca-summary.md"
             exit 1
           fi
+
+  # Runs the deliberately-failing fault suite and grades the RCA against the known answer.
+  # Separate job so an injected fault never pollutes the real suite's pass rate.
+  fault-injection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PW_WORKERS: 1
+      FAULT_INJECTION: all
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          # Two commits so the analyzer can diff HEAD~1..HEAD and spot a changed spec.
+          fetch-depth: 2
+
+      - name: Setup Node.js (version from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # These tests are expected to fail: that is the injected fault.
+      - name: Run injected faults
+        continue-on-error: true
+        run: npx playwright test tests/fault
+
+      - name: Collect and analyse
+        if: always()
+        run: |
+          npm run rca:collect
+          npm run rca:analyze
+
+      # The real gate: each injected fault must receive its expected classification.
+      - name: Verify RCA classified each injection correctly
+        if: always()
+        run: npm run rca:verify
+
+      - name: Upload fault-injection RCA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fault-injection-rca-${{ github.run_id }}
+          path: |
+            reports/rca/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14

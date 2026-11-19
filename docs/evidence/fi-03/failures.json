@@ -1,0 +1,274 @@
+[
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-02",
+    "test_title": "FI-02: injected abort of the products page request @fault",
+    "file": "fault/fi-02-network.spec.ts",
+    "outcome": "unexpected",
+    "injected": true,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products\nCall log:\n  - navigating to \"https://automationexercise.com/products\", waiting until \"domcontentloaded\"\n",
+    "stack_top": [
+      "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products",
+      "Call log:",
+      "  - navigating to \"https://automationexercise.com/products\", waiting until \"domcontentloaded\""
+    ],
+    "stderr_tail": [""],
+    "console_errors": [],
+    "network_failures": [
+      {
+        "method": "GET",
+        "url": "https://automationexercise.com/products",
+        "failure": "net::ERR_FAILED"
+      }
+    ],
+    "artifacts": {
+      "trace": "<repo>/test-results/fault-fi-02-network-Fault--fbe03-products-page-request-fault-chromium/trace.zip",
+      "screenshot": "<repo>/test-results/fault-fi-02-network-Fault--fbe03-products-page-request-fault-chromium/test-failed-1.png",
+      "video": "<repo>/test-results/fault-fi-02-network-Fault--fbe03-products-page-request-fault-chromium/video.webm",
+      "dom_snapshot": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+    },
+    "changed_files_in_head": [
+      "docs/assumptions-log.md",
+      "docs/evidence/fi-02/collection-status.json",
+      "docs/evidence/fi-02/failures.json",
+      "docs/evidence/fi-02/rca-report.json",
+      "docs/evidence/fi-02/rca-summary.md",
+      "docs/quality-scorecard.md"
+    ],
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  },
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-03",
+    "test_title": "FI-03: delayed products response breaks a short synchronisation budget (attempt 1/3) @fault",
+    "file": "fault/fi-03-timing.spec.ts",
+    "outcome": "unexpected",
+    "injected": true,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('.features_items')\nExpected: visible\nReceived: undefined\nTimeout:  1000ms\n\nCall log:\n  - Expect \"toBeVisible\" locator('.features_items') with timeout 1000ms\n  - waiting for locator('.features_items')\n",
+    "stack_top": ["Error: expect(locator).toBeVisible() failed", "", "Locator:  locator('.features_items')"],
+    "stderr_tail": [""],
+    "console_errors": [
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Abel'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      }
+    ],
+    "network_failures": [
+      {
+        "method": "GET",
+        "url": "https://automationexercise.com/products",
+        "status": 200,
+        "duration_ms": 11047,
+        "slow": true
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      }
+    ],
+    "artifacts": {
+      "trace": "<repo>/test-results/fault-fi-03-timing-Fault-i-cca48-on-budget-attempt-1-3-fault-chromium/trace.zip",
+      "screenshot": "<repo>/test-results/fault-fi-03-timing-Fault-i-cca48-on-budget-attempt-1-3-fault-chromium/test-failed-1.png",
+      "video": "<repo>/test-results/fault-fi-03-timing-Fault-i-cca48-on-budget-attempt-1-3-fault-chromium/video.webm",
+      "dom_snapshot": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+    },
+    "changed_files_in_head": [
+      "docs/assumptions-log.md",
+      "docs/evidence/fi-02/collection-status.json",
+      "docs/evidence/fi-02/failures.json",
+      "docs/evidence/fi-02/rca-report.json",
+      "docs/evidence/fi-02/rca-summary.md",
+      "docs/quality-scorecard.md"
+    ],
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  },
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-03",
+    "test_title": "FI-03: delayed products response breaks a short synchronisation budget (attempt 2/3) @fault",
+    "file": "fault/fi-03-timing.spec.ts",
+    "outcome": "unexpected",
+    "injected": true,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('.features_items')\nExpected: visible\nReceived: undefined\nTimeout:  1000ms\n\nCall log:\n  - Expect \"toBeVisible\" locator('.features_items') with timeout 1000ms\n  - waiting for locator('.features_items')\n",
+    "stack_top": ["Error: expect(locator).toBeVisible() failed", "", "Locator:  locator('.features_items')"],
+    "stderr_tail": [""],
+    "console_errors": [
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Abel'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      }
+    ],
+    "network_failures": [
+      {
+        "method": "GET",
+        "url": "https://automationexercise.com/products",
+        "status": 200,
+        "duration_ms": 6736,
+        "slow": true
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      }
+    ],
+    "artifacts": {
+      "trace": "<repo>/test-results/fault-fi-03-timing-Fault-i-84f52-on-budget-attempt-2-3-fault-chromium/trace.zip",
+      "screenshot": "<repo>/test-results/fault-fi-03-timing-Fault-i-84f52-on-budget-attempt-2-3-fault-chromium/test-failed-1.png",
+      "video": "<repo>/test-results/fault-fi-03-timing-Fault-i-84f52-on-budget-attempt-2-3-fault-chromium/video.webm",
+      "dom_snapshot": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+    },
+    "changed_files_in_head": [
+      "docs/assumptions-log.md",
+      "docs/evidence/fi-02/collection-status.json",
+      "docs/evidence/fi-02/failures.json",
+      "docs/evidence/fi-02/rca-report.json",
+      "docs/evidence/fi-02/rca-summary.md",
+      "docs/quality-scorecard.md"
+    ],
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  },
+  {
+    "schema_version": "1.1",
+    "scenario_id": "FI-03",
+    "test_title": "FI-03: delayed products response breaks a short synchronisation budget (attempt 3/3) @fault",
+    "file": "fault/fi-03-timing.spec.ts",
+    "outcome": "unexpected",
+    "injected": true,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('.features_items')\nExpected: visible\nReceived: undefined\nTimeout:  1000ms\n\nCall log:\n  - Expect \"toBeVisible\" locator('.features_items') with timeout 1000ms\n  - waiting for locator('.features_items')\n",
+    "stack_top": ["Error: expect(locator).toBeVisible() failed", "", "Locator:  locator('.features_items')"],
+    "stderr_tail": [""],
+    "console_errors": [
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Abel'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      }
+    ],
+    "network_failures": [
+      {
+        "method": "GET",
+        "url": "https://automationexercise.com/products",
+        "status": 200,
+        "duration_ms": 6253,
+        "slow": true
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "https://googleads.g.doubleclick.net/pagead/ads",
+        "failure": "net::ERR_ABORTED"
+      }
+    ],
+    "artifacts": {
+      "trace": "<repo>/test-results/fault-fi-03-timing-Fault-i-658d0-on-budget-attempt-3-3-fault-chromium/trace.zip",
+      "screenshot": "<repo>/test-results/fault-fi-03-timing-Fault-i-658d0-on-budget-attempt-3-3-fault-chromium/test-failed-1.png",
+      "video": "<repo>/test-results/fault-fi-03-timing-Fault-i-658d0-on-budget-attempt-3-3-fault-chromium/video.webm",
+      "dom_snapshot": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+    },
+    "changed_files_in_head": [
+      "docs/assumptions-log.md",
+      "docs/evidence/fi-02/collection-status.json",
+      "docs/evidence/fi-02/failures.json",
+      "docs/evidence/fi-02/rca-report.json",
+      "docs/evidence/fi-02/rca-summary.md",
+      "docs/quality-scorecard.md"
+    ],
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "d701dfd96e6b4c2cb13d0f2aea3a529a01fff07b",
+      "collected_at": "2026-11-19T20:26:08.300Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  }
+]

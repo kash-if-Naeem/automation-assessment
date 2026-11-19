@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "evaluated_at": "2026-11-19T20:26:12.300Z",
+  "correct": 2,
+  "total": 2,
+  "rows": [
+    {
+      "scenario_id": "FI-02",
+      "classification": "ENVIRONMENT_OR_NETWORK",
+      "confidence": 0.9,
+      "expected": ["ENVIRONMENT_OR_NETWORK"],
+      "correct": true,
+      "rationale": "A route abort is a test-controlled transport failure, not a product fault."
+    },
+    {
+      "scenario_id": "FI-03",
+      "classification": "TIMING_OR_FLAKINESS",
+      "confidence": 0.78,
+      "expected": ["TIMING_OR_FLAKINESS", "ENVIRONMENT_OR_NETWORK"],
+      "correct": true,
+      "rationale": "An injected slow response is a synchronisation fault, not a missing element."
+    }
+  ]
+}
