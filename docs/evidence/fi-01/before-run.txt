@@ -1,0 +1,4 @@
+    Expected: 2500
+    Received: 2000
+    test-results\ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium\test-failed-1.png
+  1 failed

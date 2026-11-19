@@ -23,35 +23,35 @@ Source refs are the published automationexercise.com test cases (`TC n`) and API
 
 ## Summary
 
-| ID    | Risk | Feature                                      | Automation layer | Source ref       | Status                |
-| ----- | ---- | -------------------------------------------- | ---------------- | ---------------- | --------------------- |
-| AE-01 | P0   | Account registration                         | UI + API         | TC 1             | Pass (CI 44598758208) |
-| AE-02 | P0   | Valid login and logout                       | UI               | TC 2, TC 4       | Pass (CI 44598758208) |
-| AE-03 | P0   | Invalid login                                | UI + API         | TC 3; API 10     | Pass (CI 44598758208) |
-| AE-04 | P1   | Duplicate registration                       | UI               | TC 5             | Pass (CI 44598758208) |
-| AE-05 | P1   | Login API validation                         | API              | API 7, 8, 10     | Pass (CI 44598758208) |
-| AE-06 | P0   | Product catalogue                            | UI + API         | TC 8; API 1      | Pass (CI 44598758208) |
-| AE-07 | P0   | Search relevance                             | UI + API         | TC 9; API 5      | Pass (CI 44598758208) |
-| AE-08 | P1   | Search empty / invalid                       | UI + API         | API 6; discovery | Pass (CI 44598758208) |
-| AE-09 | P1   | Category filtering                           | UI               | TC 18            | Pass (CI 44598758208) |
-| AE-10 | P1   | Brand filtering                              | UI + API         | TC 19; API 3     | Pass (CI 44598758208) |
-| AE-11 | P0   | Cart holds multiple items                    | UI               | TC 12            | Pass (CI 44598758208) |
-| AE-12 | P0   | Quantity calculation                         | UI               | TC 13            | Pass (CI 44598758208) |
-| AE-13 | P0   | Remove from cart                             | UI               | TC 17            | Pass (CI 44598758208) |
-| AE-14 | P0   | Cart persists on login                       | UI               | TC 20            | Pass (CI 44598758208) |
-| AE-15 | P0   | End-to-end order (flagship)                  | UI               | TC 14-16         | Pass (CI 44598758208) |
-| AE-16 | P0   | Address consistency                          | UI + API         | TC 23; API 14    | Pass (CI 44598758208) |
-| AE-17 | P1   | Invoice download                             | UI               | TC 24            | Pass (CI 44598758208) |
-| AE-18 | P1   | Product review                               | UI               | TC 21            | Pass (CI 44598758208) |
-| AE-19 | P1   | Contact form with upload                     | UI               | TC 6             | Pass (CI 44598758208) |
-| AE-20 | P2   | Subscriptions                                | UI               | TC 10, TC 11     | Pass (CI 44598758208) |
-| AE-21 | P2   | Recommended items                            | UI               | TC 22            | Pass (CI 44598758208) |
-| AE-22 | P1   | Account API CRUD                             | API              | API 11-14        | Pass (CI 44598758208) |
-| AE-23 | P1   | API method validation (405)                  | API              | API 2, 4, 9      | Pass (CI 44598758208) |
-| AE-24 | P1   | UI / API consistency                         | UI + API         | API 1, 3         | Pass (CI 44598758208) |
-| FI-01 | -    | Injected script fault (wrong expected total) | UI (fault)       | -                | Not executed          |
-| FI-02 | -    | Injected network fault (route abort)         | UI (fault)       | -                | Executed (local)      |
-| FI-03 | -    | Injected delayed response (stretch)          | UI (fault)       | -                | Not executed          |
+| ID    | Risk | Feature                                      | Automation layer | Source ref       | Status                                    |
+| ----- | ---- | -------------------------------------------- | ---------------- | ---------------- | ----------------------------------------- |
+| AE-01 | P0   | Account registration                         | UI + API         | TC 1             | Pass (CI 44598758208)                     |
+| AE-02 | P0   | Valid login and logout                       | UI               | TC 2, TC 4       | Pass (CI 44598758208)                     |
+| AE-03 | P0   | Invalid login                                | UI + API         | TC 3; API 10     | Pass (CI 44598758208)                     |
+| AE-04 | P1   | Duplicate registration                       | UI               | TC 5             | Pass (CI 44598758208)                     |
+| AE-05 | P1   | Login API validation                         | API              | API 7, 8, 10     | Pass (CI 44598758208)                     |
+| AE-06 | P0   | Product catalogue                            | UI + API         | TC 8; API 1      | Pass (CI 44598758208)                     |
+| AE-07 | P0   | Search relevance                             | UI + API         | TC 9; API 5      | Pass (CI 44598758208)                     |
+| AE-08 | P1   | Search empty / invalid                       | UI + API         | API 6; discovery | Pass (CI 44598758208)                     |
+| AE-09 | P1   | Category filtering                           | UI               | TC 18            | Pass (CI 44598758208)                     |
+| AE-10 | P1   | Brand filtering                              | UI + API         | TC 19; API 3     | Pass (CI 44598758208)                     |
+| AE-11 | P0   | Cart holds multiple items                    | UI               | TC 12            | Pass (CI 44598758208)                     |
+| AE-12 | P0   | Quantity calculation                         | UI               | TC 13            | Pass (CI 44598758208)                     |
+| AE-13 | P0   | Remove from cart                             | UI               | TC 17            | Pass (CI 44598758208)                     |
+| AE-14 | P0   | Cart persists on login                       | UI               | TC 20            | Pass (CI 44598758208)                     |
+| AE-15 | P0   | End-to-end order (flagship)                  | UI               | TC 14-16         | Pass (CI 44598758208)                     |
+| AE-16 | P0   | Address consistency                          | UI + API         | TC 23; API 14    | Pass (CI 44598758208)                     |
+| AE-17 | P1   | Invoice download                             | UI               | TC 24            | Pass (CI 44598758208)                     |
+| AE-18 | P1   | Product review                               | UI               | TC 21            | Pass (CI 44598758208)                     |
+| AE-19 | P1   | Contact form with upload                     | UI               | TC 6             | Pass (CI 44598758208)                     |
+| AE-20 | P2   | Subscriptions                                | UI               | TC 10, TC 11     | Pass (CI 44598758208)                     |
+| AE-21 | P2   | Recommended items                            | UI               | TC 22            | Pass (CI 44598758208)                     |
+| AE-22 | P1   | Account API CRUD                             | API              | API 11-14        | Pass (CI 44598758208)                     |
+| AE-23 | P1   | API method validation (405)                  | API              | API 2, 4, 9      | Pass (CI 44598758208)                     |
+| AE-24 | P1   | UI / API consistency                         | UI + API         | API 1, 3         | Pass (CI 44598758208)                     |
+| FI-01 | -    | Injected script fault (wrong expected total) | UI (fault)       | -                | Executed — TEST_SCRIPT_DEFECT 0.70        |
+| FI-02 | -    | Injected network fault (route abort)         | UI (fault)       | -                | Executed — ENVIRONMENT_OR_NETWORK 0.90    |
+| FI-03 | -    | Injected delayed response (stretch)          | UI (fault)       | -                | Executed — TIMING_OR_FLAKINESS 0.78 (3/3) |
 
 Shared test data: `generateTestUser()` in `src/fixtures/user-data.ts` builds a fresh identity per
 test from a uuid first segment (`<id>`), so parallel workers never collide — `QA <id>`,
@@ -260,13 +260,16 @@ Every account created is deleted in teardown through API 12 (`accountCleanup` au
   billing address blocks, dropping their headings. 5. Compare each against the fixture.
 - **Test data:** generated TestUser — the oracle checks `firstName`, `lastName`,
   `1 Test Street <id>`, `Testville`, `90210` and `United States`.
-- **Expected outcome:** the delivery block contains every one of those six fixture values, and the
-  normalised billing text equals the normalised delivery text — what was typed at registration is
+- **Expected outcome:** three oracles must hold — (1) the delivery block contains every one of the
+  six fixture values, (2) the normalised billing text equals the normalised delivery text, and
+  (3) API 14 returns a stored record whose address fields equal the same fixture — what was typed at registration is
   what is shown at checkout, on both blocks. Headings are excluded from the comparison per
   assumption A7. The same oracle runs inside AE-15 as its own step.
 - **Evidence:** `tests/ui/checkout.spec.ts:112`; oracle helper at `tests/ui/checkout.spec.ts:12`;
-  repeated in the flagship at `tests/ui/checkout.spec.ts:88`. The API 14 side of this requirement
-  (`getUserDetailByEmail` returning the stored address) is exercised under AE-22, not here.
+  repeated in the flagship at `tests/ui/checkout.spec.ts:88`. The API 14 side is now asserted in
+  this same test: `api.getUserDetailByEmail` must return `address1`, `city`, `state`, `zipcode`
+  and `country` matching the same fixture, so the UI cannot pass by rendering something the
+  backend never stored.
 - **Status:** Pass (CI 44598758208)
 
 ### AE-17 — Invoice download
@@ -381,9 +384,15 @@ Every account created is deleted in teardown through API 12 (`accountCleanup` au
   `TEST_SCRIPT_DEFECT` at confidence 0.70 (the "spec changed in HEAD" rule), with `PRODUCT_DEFECT`
   recorded as the rejected alternative. Without the committed change the analyzer must return
   `UNKNOWN` — the correct answer on insufficient evidence.
-- **Evidence:** procedure at `docs/fault-injection.md` (FI-01 section); no run artifacts
-  committed.
-- **Status:** Not executed
+- **Evidence:** `docs/evidence/fi-01/` — `README.md` (full write-up), `before-run.txt`,
+  `before-rca-report.json`, `before-injection-accuracy.json`, `after-run.txt`,
+  `after-rca-summary.md`, `after-collection-status.json`; branch
+  `fi/01-wrong-expected-total`, injected commit `5931405`, repair commit `7745b08`.
+- **Result:** AE-12 failed with `Expected 2500, Received 2000`; RCA produced
+  `TEST_SCRIPT_DEFECT` at 0.70 citing `ui/cart.spec.ts changed in 5931405`, ranking and
+  rejecting `PRODUCT_DEFECT` (0.50). `npm run rca:verify` graded it 1/1. After the one-token
+  patch AE-12 passed again, and the clean-run RCA reported `status: ok, failures: 0`.
+- **Status:** Executed — correctly classified. Repair PR open for human review.
 
 ### FI-02 — Injected network fault
 
@@ -399,16 +408,27 @@ https://automationexercise.com/products`, and RCA classifies it `ENVIRONMENT_OR_
 - **Evidence:** `tests/fault/fi-02-network.spec.ts:14`; `docs/evidence/fi-02/rca-report.json`,
   `docs/evidence/fi-02/rca-summary.md`, `docs/evidence/fi-02/failures.json`,
   `docs/evidence/fi-02/collection-status.json`; assumption A9.
-- **Status:** Executed (local) — excluded from CI by `testIgnore`.
+- **Status:** Executed — correctly classified. Excluded from the normal suite by
+  `testIgnore`, and run in CI by the dedicated `fault-injection` job.
 
 ### FI-03 — Injected delayed response (stretch)
 
-- **Steps:** would register a `page.route` handler that fulfils the request after a controlled
-  delay, with no fixed sleeps in the test, and assert the timeout classification.
-- **Test data:** not defined — the scenario is not implemented.
-- **Expected outcome:** not defined.
-- **Evidence:** noted as a stretch item in `docs/fault-injection.md`; no spec file exists.
-- **Status:** Not executed
+- **Steps:** 1. Set `FAULT_INJECTION=FI-03`. 2. Register a `page.route` handler on
+  `**/products` that continues the request only after a 5,000 ms delay — the delay is in the
+  interceptor, never a sleep in the test. 3. Start the navigation without awaiting it. 4. Assert `.features_items` is visible within a 1,000 ms budget, i.e. less than the injected
+  delay. 5. Repeat the whole test 3 times with `retries: 0`. 6. Run `rca:collect`,
+  `rca:analyze` and `rca:verify`.
+- **Test data:** route pattern `**/products`; injected delay 5,000 ms; assertion budget
+  1,000 ms; 3 attempts. No account or catalogue data involved.
+- **Expected outcome:** all 3 attempts fail identically on the visibility budget, and RCA
+  classifies `TIMING_OR_FLAKINESS` — not `LOCATOR_OR_UI_CHANGE`, because the element was late
+  rather than absent, and never `PRODUCT_DEFECT`. The discriminator is the captured response
+  duration.
+- **Evidence:** `tests/fault/fi-03-timing.spec.ts`; `docs/evidence/fi-03/rca-report.json`,
+  `injection-accuracy.json`, `failures.json`, `rca-summary.md`.
+- **Result:** 3 of 3 attempts failed; `TIMING_OR_FLAKINESS` at 0.78 on each, with the slowest
+  captured response at 11,047 ms ranking it above the locator hypothesis.
+- **Status:** Executed — correctly classified, reproducible 3/3.
 
 ## Coverage summary
 

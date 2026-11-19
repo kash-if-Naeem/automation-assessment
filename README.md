@@ -29,8 +29,10 @@ Copy-Item .env.example .env   # optional; defaults point at the public site
 | One scenario                          | `npx playwright test -g "AE-12"`                                  |
 | Headed run                            | `npm run test:headed`                                             |
 | HTML report                           | `npm run report:html`                                             |
-| Fault injection FI-02                 | `$env:FAULT_INJECTION='FI-02'; npx playwright test tests/fault`   |
+| Fault injection (one)                 | `$env:FAULT_INJECTION='FI-02'; npx playwright test tests/fault`   |
+| Fault injection (all)                 | `$env:FAULT_INJECTION='all'; npx playwright test tests/fault`     |
 | RCA collect and analyze               | `npm run rca:collect; npm run rca:analyze`                        |
+| Grade RCA against known faults        | `npm run rca:verify`                                              |
 
 Keep `PW_WORKERS` at 2 or lower. The site is public and shared.
 
@@ -81,12 +83,21 @@ Secrets are not available to fork pull requests.
 
 `npm run rca:collect` reads `test-results/results.json` and writes `reports/rca/failures.json` and `collection-status.json`. If results are missing, it says so rather than reporting a pass.
 
-`npm run rca:analyze` writes `rca-report.json` (schema in `docs/rca-schema.json`) and `rca-summary.md`. It ranks hypotheses by rule, records evidence for and against each, and returns UNKNOWN below 0.60 confidence. Every record requires human approval.
+`npm run rca:analyze` writes `rca-report.json` (schema in `docs/rca-schema.json`) and `rca-summary.md`. It ranks hypotheses by rule, records evidence for and against each, and returns UNKNOWN below 0.60 confidence or on a tie. Every record requires human approval.
+
+The Collect stage gathers console errors, page exceptions, failed and 4xx/5xx responses, response timing, and a DOM snapshot — all redacted, with query strings stripped from URLs. Response timing is what lets the analyzer tell "the element was late" (timing) from "the element is missing" (locator or UI change).
+
+`npm run rca:verify` grades the RCA against the known answer for each injected fault and exits non-zero on a wrong classification, so a classifier regression fails CI. Current accuracy: **3/3** (see `docs/fault-injection.md`).
 
 ## Limitations
 
-- The public site can show a "queue full" page. Failures from it are THIRD_PARTY_DEPENDENCY, not product defects.
-- The RCA is rule-based. No LLM adapter is implemented. AI_API_KEY is accepted but unused.
-- AE-16 does not cross-check addresses against API 14.
-- The schedule can only be seen to fire once the workflow is on `main`.
-- FI-01 and FI-03 are not executed in this build. See `docs/fault-injection.md`.
+- The public site intermittently returns a queue page, a Cloudflare 52x page, or HTTP 403 to CI runners. Those are classified THIRD_PARTY_DEPENDENCY, never product defects, and were recorded rather than worked around — evading an anti-bot control is out of scope.
+- The RCA is rule-based. No LLM adapter is implemented; `AI_API_KEY` is accepted but unused, and confidence values are fixed per rule rather than calibrated against outcome frequencies.
+- The repair PR from FI-01 is open and awaiting human review. Until it is merged, `main` still carries the ANSI-escape bug it fixes, which affects the assertion-mismatch rule only.
+- No PR-triggered CI run exists yet; opening the repair PR produces one.
+- The scheduled 00:00 UTC run is defined and on the default branch, but no scheduled run has elapsed, so the cron is shown by definition rather than by a run record.
+- CI per-test retry counts have not been read back from a run artifact, so the CI flaky rate is stated as a method rather than a number.
+- RCA does not suppress downstream symptoms, and records carry no business-severity or owner field.
+- The 20-minute live defence has not been performed.
+
+Full status, including what is deliberately not done: `docs/assessment-compliance.md`.

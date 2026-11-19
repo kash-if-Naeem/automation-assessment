@@ -1,0 +1,142 @@
+[
+  {
+    "schema_version": "1.1",
+    "scenario_id": "AE-12",
+    "test_title": "AE-12: Quantity 4 gives the correct line total @p0",
+    "file": "ui/cart.spec.ts",
+    "outcome": "unexpected",
+    "injected": false,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 2500\nReceived: 2000",
+    "stack_top": ["Error: expect(received).toBe(expected) // Object.is equality", "", "Expected: 2500"],
+    "stderr_tail": [""],
+    "console_errors": [
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/products' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Abel'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/products"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/product_details/1' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/product_details/1"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/product_details/1' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/product_details/1"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/product_details/1' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Abel'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/product_details/1"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/view_cart' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/view_cart"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/view_cart' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Open+Sans:400,800,300,600,700'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/view_cart"
+      },
+      {
+        "type": "error",
+        "text": "Mixed Content: The page at 'https://automationexercise.com/view_cart' was loaded over HTTPS, but requested an insecure stylesheet 'http://fonts.googleapis.com/css?family=Abel'. This request has been blocked; the content must be served over HTTPS.",
+        "location": "https://automationexercise.com/view_cart"
+      }
+    ],
+    "network_failures": [
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "https://fonts.gstatic.com/s/materialicons/v145/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "method": "GET",
+        "url": "https://pagead2.googlesyndication.com/pagead/managed/js/adsense/m202611110101/show_ads_impl_fy2021.js",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "https://fundingchoicesmessages.google.com/i/ca-pub-1677597403311019",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "method": "POST",
+        "url": "https://pagead2.googlesyndication.com/pagead/ping",
+        "failure": "net::ERR_ABORTED"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      },
+      {
+        "method": "GET",
+        "url": "http://fonts.googleapis.com/css",
+        "failure": "mixed-content"
+      }
+    ],
+    "artifacts": {
+      "trace": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/trace.zip",
+      "screenshot": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/test-failed-1.png",
+      "video": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/video.webm",
+      "dom_snapshot": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
+    },
+    "changed_files_in_head": ["tests/ui/cart.spec.ts"],
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "593140518bde4b0a3831b6c56bac639e49205b84",
+      "collected_at": "2026-11-19T20:32:29.745Z",
+      "junit_path": "test-results/junit.xml"
+    }
+  }
+]
