@@ -1,12 +1,12 @@
 # AI Interaction Log
 
 Records of AI-proposed work that was challenged and corrected during this build, with the
-evidence that forced each correction. The assessment asks for at least five; there are eight.
+evidence that forced each correction. The assessment asks for at least five; there are nine.
 
 **How to read this.** The AI (Claude, via Claude Code) proposed the code and the RCA rules.
 What challenged each proposal was concrete evidence — a live run, a CI run, a page snapshot
 or an injected fault — not an opinion. Each entry names that evidence so a reviewer can
-re-check it. Entries 1–3 are test-code defects, 4–6 are RCA and governance defects, 7–8 are
+re-check it. Entries 1-3 are test-code defects, 4-6 and 9 are RCA and governance defects, 7-8 are
 process defects.
 
 The **Human decision** column records only decisions the engineer actually made. Where it
@@ -142,6 +142,28 @@ No model was called from CI. Cost and latency were not instrumented, so they are
   observed) ranks `TIMING_OR_FLAKINESS` above the locator hypothesis.
 - **Evidence:** `tests/fault/fi-03-timing.spec.ts`; `docs/evidence/fi-03/`.
 - **Human decision:** _pending_.
+
+### Entry 9 — RCA would have blamed the tests for an outage
+
+- **Skill:** `skills/rca.md` (classification policy)
+- **AI proposal:** detect a site block from Playwright's `error-context.md` page snapshot.
+- **Challenge:** a CI run of the repair branch failed all 33 tests. The API half classified
+  correctly from the `403` in the message, but the **UI half did not**: a blocked page
+  produces an ordinary `locator.waitFor: Timeout` with no 403 anywhere in the text, so the
+  analyzer ranked `LOCATOR_OR_UI_CHANGE` at 0.70 — blaming the tests for someone else's
+  outage. Checked by replaying the run's real error strings through `classify()` rather
+  than assuming the existing rules covered it.
+- **What made it visible:** the DOM snapshots added for the Collect stage. They showed a
+  Cloudflare 525 page, an auto-reloading challenge interstitial, and in several cases an
+  empty `<body></body>`. The evidence was being captured and then not read.
+- **Correction:** the marker now scans the captured DOM snapshot as well as
+  `error-context.md`, and recognises challenge interstitials and empty documents. An empty
+  document classifies `ENVIRONMENT_OR_NETWORK`, because an element cannot be missing from a
+  page that never rendered. A genuine locator timeout with no marker still classifies
+  `LOCATOR_OR_UI_CHANGE` — the fix is not a blanket excuse.
+- **Guarded:** three more fixtures recorded from that run, in `tools/rca/__fixtures__/`.
+- **Evidence:** `docs/assumptions-log.md` A15; `npm run rca:selftest` → 4/4.
+- **Human decision:** _pending — part of the repair PR._
 
 ---
 

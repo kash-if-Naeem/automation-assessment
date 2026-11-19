@@ -113,19 +113,42 @@ function readJunit(): CollectionStatus['junit'] {
 }
 
 /** Page-snapshot markers from Playwright's error-context.md, written next to the trace. */
-function snapshotMarker(tracePath?: string): string {
-  if (!tracePath) return '';
-  const ctxFile = path.join(path.dirname(tracePath), 'error-context.md');
-  if (!fs.existsSync(ctxFile)) return '';
-  const text = fs.readFileSync(ctxFile, 'utf-8');
-  if (/attention required|cloudflare|403 forbidden|access denied/i.test(text)) {
+/**
+ * Identifies a site-side block from whatever page was actually on screen.
+ *
+ * Reads both Playwright's error-context.md and the DOM snapshot the diagnostics fixture
+ * captures. This matters: a Cloudflare block renders as an ordinary timeout waiting for an
+ * element, which the analyzer would otherwise rank as LOCATOR_OR_UI_CHANGE — blaming the
+ * tests for someone else's outage. Observed on CI runs where every UI test timed out while
+ * the DOM showed a 525 page or a challenge interstitial.
+ */
+function markerFor(texts: string[]): string {
+  const all = texts.filter(Boolean).join('\n');
+  if (!all) return '';
+  if (/attention required|cloudflare|403 forbidden|access denied|just a moment/i.test(all)) {
     return ' [page-snapshot: site access block (WAF/403)]';
   }
-  if (/SSL handshake failed|error code 52\d/i.test(text)) {
+  if (/SSL handshake failed|error code 52\d/i.test(all)) {
     return ' [page-snapshot: site error page (SSL handshake failed, error code 52x)]';
   }
-  if (/queue full|under heavy load/i.test(text)) return ' [page-snapshot: site queue page (queue full)]';
+  if (/queue full|under heavy load/i.test(all)) return ' [page-snapshot: site queue page (queue full)]';
+  // A challenge interstitial: a bare page whose only job is to reload itself.
+  if (/window\.location\.reload\(\)/.test(all) && !/features_items|data-qa=/.test(all)) {
+    return ' [page-snapshot: site interstitial (auto-reloading challenge page)]';
+  }
+  // Nothing rendered at all: not a locator problem, the document never arrived.
+  if (/<body>\s*<\/body>/i.test(all)) return ' [page-snapshot: empty document (page did not render)]';
   return '';
+}
+
+function snapshotMarker(tracePath: string | undefined, domSnapshot: string | undefined): string {
+  const texts: string[] = [];
+  if (tracePath) {
+    const ctxFile = path.join(path.dirname(tracePath), 'error-context.md');
+    if (fs.existsSync(ctxFile)) texts.push(fs.readFileSync(ctxFile, 'utf-8'));
+  }
+  if (domSnapshot) texts.push(domSnapshot.slice(0, 20_000));
+  return markerFor(texts);
 }
 
 /**
@@ -236,7 +259,7 @@ function collect(): void {
           injected: /@fault|FI-\d+/.test(spec.title),
           attempts: results.length,
           retry_count: Math.max(results.length - 1, 0),
-          error_message: clean(message) + snapshotMarker(trace),
+          error_message: clean(message) + snapshotMarker(trace, attachmentText(attachments, 'dom-snapshot.html')),
           stack_top: clean(String(error.stack ?? ''))
             .split('\n')
             .slice(0, 3),

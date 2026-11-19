@@ -192,6 +192,18 @@ export function classify(f: FailureRecord, changedFallback: string[]): RcaRecord
     });
   }
 
+  // Rule 2c: nothing rendered. An element cannot be "missing" from a document that never
+  // arrived, so this must not be read as a locator or UI change.
+  if (/page-snapshot: empty document/i.test(msg)) {
+    hyps.push({
+      classification: 'ENVIRONMENT_OR_NETWORK',
+      confidence: 0.7,
+      rule: 'empty-document',
+      evidence_for: ['captured DOM snapshot has an empty body: the page never rendered'],
+      evidence_against: ['an early render failure in the product itself would look similar'],
+    });
+  }
+
   // Rule 3: non-JSON body with a non-5xx status, e.g. a wrong endpoint path returns an HTML 404.
   if (/non-json body \(http (?!5|403|429)\d{3}\)/i.test(msg)) {
     hyps.push({
@@ -209,11 +221,12 @@ export function classify(f: FailureRecord, changedFallback: string[]): RcaRecord
   // outright and the tie rule sends it to UNKNOWN for a human.
   if (/waiting for (locator|getBy)|locator\.\w+: Timeout|toBeVisible|element\(s\) not found/i.test(msg)) {
     const slow = (f.network_failures ?? []).filter((n) => n.slow === true);
+    const blankPage = /page-snapshot: (empty document|site|interstitial)/i.test(msg);
     const slowest = slow.sort((a, b) => Number(b.duration_ms ?? 0) - Number(a.duration_ms ?? 0))[0];
 
     hyps.push({
       classification: 'LOCATOR_OR_UI_CHANGE',
-      confidence: slow.length ? 0.45 : hasTrace ? 0.7 : 0.55,
+      confidence: blankPage ? 0.3 : slow.length ? 0.45 : hasTrace ? 0.7 : 0.55,
       rule: 'locator-timeout',
       evidence_for: ['Playwright reported an unresolved locator'],
       evidence_against: [

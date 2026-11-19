@@ -1,0 +1,32 @@
+{
+  "note": "Recorded from the same CI run. The DOM snapshot was <body></body>: the page never rendered, so this is not a locator change.",
+  "recorded_at": "2026-11-20",
+  "source": "AE-11 cart while nothing rendered",
+  "contains_ansi": false,
+  "expected_classification": "ENVIRONMENT_OR_NETWORK",
+  "record": {
+    "schema_version": "1.2",
+    "file": "ui/cart.spec.ts",
+    "outcome": "unexpected",
+    "risk": "P0",
+    "injected": false,
+    "attempts": 2,
+    "retry_count": 1,
+    "stack_top": [],
+    "stderr_tail": [],
+    "console_errors": [],
+    "network_failures": [],
+    "artifacts": {
+      "trace": "<repo>/test-results/trace.zip"
+    },
+    "changed_files_in_head": [],
+    "detect": {
+      "run_url": "https://github.com/kash-if-Naeem/automation-assessment/actions",
+      "commit_sha": "fixture",
+      "collected_at": "2026-11-20T00:00:00.000Z"
+    },
+    "scenario_id": "AE-11",
+    "test_title": "AE-11 (recorded)",
+    "error_message": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('.features_items') to be visible [page-snapshot: empty document (page did not render)]"
+  }
+}

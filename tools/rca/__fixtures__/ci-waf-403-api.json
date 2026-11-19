@@ -1,0 +1,32 @@
+{
+  "note": "Recorded from the CI run of repair/fi-01-ansi-strip, where every API call was refused.",
+  "recorded_at": "2026-11-20",
+  "source": "AE-06 API productsList during a site block",
+  "contains_ansi": false,
+  "expected_classification": "THIRD_PARTY_DEPENDENCY",
+  "record": {
+    "schema_version": "1.2",
+    "file": "api/products.spec.ts",
+    "outcome": "unexpected",
+    "risk": "P0",
+    "injected": false,
+    "attempts": 2,
+    "retry_count": 1,
+    "stack_top": [],
+    "stderr_tail": [],
+    "console_errors": [],
+    "network_failures": [],
+    "artifacts": {
+      "trace": "<repo>/test-results/trace.zip"
+    },
+    "changed_files_in_head": [],
+    "detect": {
+      "run_url": "https://github.com/kash-if-Naeem/automation-assessment/actions",
+      "commit_sha": "fixture",
+      "collected_at": "2026-11-20T00:00:00.000Z"
+    },
+    "scenario_id": "AE-06",
+    "test_title": "AE-06 (recorded)",
+    "error_message": "ApiContractError: productsList: schema mismatch (HTTP 403): responseCode Required; products Required"
+  }
+}
