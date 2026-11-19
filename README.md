@@ -93,7 +93,7 @@ The Collect stage gathers console errors, page exceptions, failed and 4xx/5xx re
 
 - The public site intermittently returns a queue page, a Cloudflare 52x page, or HTTP 403 to CI runners. Those are classified THIRD_PARTY_DEPENDENCY, never product defects, and were recorded rather than worked around — evading an anti-bot control is out of scope.
 - The RCA is rule-based. No LLM adapter is implemented; `AI_API_KEY` is accepted but unused, and confidence values are fixed per rule rather than calibrated against outcome frequencies.
-- The repair branch `fi/01-wrong-expected-total` is pushed and its PR body is prepared, but **no pull request has been opened**. Until it is reviewed and merged, `main` still carries the ANSI-escape bug it fixes, so the assertion-mismatch rule cannot fire on a real failure.
+- The repair branch `repair/fi-01-ansi-strip` is pushed and its PR body is prepared, but **no pull request has been opened**. Until it is reviewed and merged, `main` still carries the ANSI-escape bug it fixes, so the assertion-mismatch rule cannot fire on a real failure.
 - No PR-triggered CI run exists yet; opening the repair PR produces one.
 - The scheduled 00:00 UTC run is defined and on the default branch, but no scheduled run has elapsed, so the cron is shown by definition rather than by a run record.
 - CI per-test retry counts have not been read back from a run artifact, so the CI flaky rate is stated as a method rather than a number.

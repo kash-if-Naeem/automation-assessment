@@ -23,7 +23,7 @@ main suite so an injected failure never affects the real pass rate.
 
 Full write-up, before/after runs, commit ids and artifacts: **`docs/evidence/fi-01/README.md`**.
 
-- Branch `fi/01-wrong-expected-total`, injected commit `5931405`.
+- Branch `repair/fi-01-ansi-strip`, injected commit `5931405`.
 - AE-12 adds quantity 4; the injection asserts the total for quantity 5.
 - Before: AE-12 passed. After injection: failed, `Expected 2500, Received 2000`
   (2000 is the site's correct arithmetic). After minimal patch: passed.

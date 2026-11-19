@@ -1,7 +1,7 @@
 # Repair PR — ready to open
 
 Open at:
-<https://github.com/kash-if-Naeem/automation-assessment/compare/main...fi/01-wrong-expected-total?expand=1>
+<https://github.com/kash-if-Naeem/automation-assessment/compare/main...repair/fi-01-ansi-strip?expand=1>
 
 **Title**
 
@@ -30,11 +30,30 @@ correct and was not. Only a genuine injected fault exposed it.
 
 - `tools/rca/collect.ts`: strip ANSI escapes once, where evidence is stored, so the analyzer
   and the committed artifacts both see clean text.
+- `src/utils/logger.ts`: shared `stripAnsi()`.
+- `tools/rca/collect.ts`: strip before storing evidence, so artifacts are readable.
+- `tools/rca/analyze.ts`: strip defensively as well — a rule must never depend on an
+  upstream stage having run, which is exactly how this broke.
 - `tools/rca/verify-injections.ts`: use the merged expectation map rather than the base one,
-  so a `RCA_EXPECT` override is actually applied.
+  so a `RCA_EXPECT` override is applied instead of crashing on `undefined`.
+
+**Regression guard — the part that stops this recurring:**
+
+- `tools/rca/selftest.ts` replays recorded failures through the classifier offline.
+- `tools/rca/__fixtures__/real-assertion-failure.json` is captured verbatim from a real run,
+  escape codes intact. The selftest refuses to pass a fixture that has lost them, because a
+  sanitised fixture no longer reproduces the bug.
+- Wired into the `fault-injection` CI job, so the rules stay protected even when the public
+  site is unavailable and the live fault suites cannot run.
+
+Verified both ways: the selftest **fails** on `main`'s current code and **passes** with this
+branch.
 
 The injected fault and its revert are both in this branch's history, so the **net diff
-against `main` is only the two fixes above**. AE-12 is unchanged relative to `main`.
+against `main` is only the fixes and the guard** — 8 files. `tests/ui/cart.spec.ts` is byte
+identical to `main`.
+
+The branch is rebased onto current `main`, so merging reverts nothing.
 
 ## Evidence
 
@@ -54,7 +73,7 @@ Artifacts: `docs/evidence/fi-01/`.
 - [ ] The patch is minimal: one token in the spec, plus the two tool fixes the exercise justified
 - [ ] No assertion was weakened, deleted, or given a longer timeout
 - [ ] No secrets, personal data or local paths in the committed artifacts
-- [ ] The injected-fault commit `5931405` is **not** to be cherry-picked to `main` on its own
+- [ ] The injected-fault commit (`c6c0b09` after rebase) is **not** to be cherry-picked to `main` on its own
 - [ ] `npm run typecheck`, `npm run lint`, `npm run format:check` pass
 - [ ] The RCA classification was verified against the trace, not accepted on confidence alone
 

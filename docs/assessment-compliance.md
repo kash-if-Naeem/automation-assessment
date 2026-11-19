@@ -5,14 +5,14 @@ Maps each requirement of the AI Level-3 assessment handout (v1.0) to evidence in
 
 ## Mandatory gates (section 16)
 
-| Gate                                            | Status           | Evidence                                                                                                                                                 |
-| ----------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Reproducible working repo                       | **Done**         | Fresh clone → `npm ci`, typecheck, lint, format, `--list` 33 tests, 33/33 passing                                                                        |
-| ≥18 passing UI cases, ≥8 API assertions         | **Done**         | 20 UI + 2 integration, 14 API endpoint/method checks; 33/33 green in CI runs 44598064284 and 44598758208                                                 |
-| Working CI artifact capture                     | **Done**         | Artifacts on all three runs, including the failed one (1.55 MB on 44598758208)                                                                           |
-| Two properly labelled fault-injection RCAs      | **Done — three** | FI-01 `TEST_SCRIPT_DEFECT`, FI-02 `ENVIRONMENT_OR_NETWORK`, FI-03 `TIMING_OR_FLAKINESS`; 3/3 graded by `npm run rca:verify`                              |
-| One human-reviewed patch validation             | **Not met**      | Repair PR from `fi/01-wrong-expected-total`; body in `docs/evidence/fi-01/repair-pr.md`. **The merge decision is the engineer's and has not been made.** |
-| Prompt/skill and security controls demonstrated | **Done**         | 8 challenge/correction records in `docs/evidence/ai-interaction-log.md`; 4 skills; `docs/ai-policy.md`; `skills/review.md` prompt-injection section      |
+| Gate                                            | Status           | Evidence                                                                                                                                              |
+| ----------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reproducible working repo                       | **Done**         | Fresh clone → `npm ci`, typecheck, lint, format, `--list` 33 tests, 33/33 passing                                                                     |
+| ≥18 passing UI cases, ≥8 API assertions         | **Done**         | 20 UI + 2 integration, 14 API endpoint/method checks; 33/33 green in CI runs 44598064284 and 44598758208                                              |
+| Working CI artifact capture                     | **Done**         | Artifacts on all three runs, including the failed one (1.55 MB on 44598758208)                                                                        |
+| Two properly labelled fault-injection RCAs      | **Done — three** | FI-01 `TEST_SCRIPT_DEFECT`, FI-02 `ENVIRONMENT_OR_NETWORK`, FI-03 `TIMING_OR_FLAKINESS`; 3/3 graded by `npm run rca:verify`                           |
+| One human-reviewed patch validation             | **Not met**      | Repair PR from `repair/fi-01-ansi-strip`; body in `docs/evidence/fi-01/repair-pr.md`. **The merge decision is the engineer's and has not been made.** |
+| Prompt/skill and security controls demonstrated | **Done**         | 8 challenge/correction records in `docs/evidence/ai-interaction-log.md`; 4 skills; `docs/ai-policy.md`; `skills/review.md` prompt-injection section   |
 
 ## Outcomes (section 2)
 

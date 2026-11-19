@@ -117,7 +117,7 @@ scheduled run has elapsed yet, so it is not yet evidenced by a run record.
   Confidence values are fixed per rule, not calibrated against outcome frequencies.
 - CI per-test retry counts have not been read back from a run artifact, so the CI flaky rate
   is stated as a method rather than a number.
-- The repair branch `fi/01-wrong-expected-total` is pushed and its PR body is prepared in
+- The repair branch `repair/fi-01-ansi-strip` is pushed and its PR body is prepared in
   `docs/evidence/fi-01/repair-pr.md`, but **no pull request has been opened yet** and nothing
   has been reviewed or merged. Opening it requires the engineer's GitHub session.
 - The 20-minute live defence has not been performed.

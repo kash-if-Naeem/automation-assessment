@@ -375,7 +375,7 @@ Every account created is deleted in teardown through API 12 (`accountCleanup` au
 
 ### FI-01 — Injected script fault
 
-- **Steps:** 1. Branch `fi/01-wrong-expected-total`. 2. In AE-12 change the oracle from
+- **Steps:** 1. Branch `repair/fi-01-ansi-strip`. 2. In AE-12 change the oracle from
   `expectedLineTotal(unitPrice, 4)` to `expectedLineTotal(unitPrice, 5)` and commit it as an
   injected fault. 3. Run `npx playwright test -g "AE-12"`. 4. Run `npm run rca:collect` and
   `npm run rca:analyze`. 5. Revert the expected value and re-run.
@@ -387,7 +387,7 @@ Every account created is deleted in teardown through API 12 (`accountCleanup` au
 - **Evidence:** `docs/evidence/fi-01/` — `README.md` (full write-up), `before-run.txt`,
   `before-rca-report.json`, `before-injection-accuracy.json`, `after-run.txt`,
   `after-rca-summary.md`, `after-collection-status.json`; branch
-  `fi/01-wrong-expected-total`, injected commit `5931405`, repair commit `7745b08`.
+  `repair/fi-01-ansi-strip`, injected commit `5931405`, repair commit `7745b08`.
 - **Result:** AE-12 failed with `Expected 2500, Received 2000`; RCA produced
   `TEST_SCRIPT_DEFECT` at 0.70 citing `ui/cart.spec.ts changed in 5931405`, ranking and
   rejecting `PRODUCT_DEFECT` (0.50). `npm run rca:verify` graded it 1/1. After the one-token

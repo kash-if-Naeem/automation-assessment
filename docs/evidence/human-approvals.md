@@ -15,14 +15,14 @@ reviewer's behalf.
 
 ## Pending review
 
-| Item                                                         | Status                                 | Where to review                                                                          |
-| ------------------------------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Repair PR from FI-01** (ANSI-strip fix + `RCA_EXPECT` fix) | **Pending**                            | branch `fi/01-wrong-expected-total`; body prepared in `docs/evidence/fi-01/repair-pr.md` |
-| FI-01 classification (`TEST_SCRIPT_DEFECT`, 0.70)            | Pending verification against the trace | `docs/evidence/fi-01/before-rca-report.json`                                             |
-| FI-02 classification (`ENVIRONMENT_OR_NETWORK`, 0.90)        | Pending                                | `docs/evidence/fi-02/rca-report.json`                                                    |
-| FI-03 classification (`TIMING_OR_FLAKINESS`, 0.78)           | Pending                                | `docs/evidence/fi-03/rca-report.json`                                                    |
-| Test coverage and priorities                                 | Pending                                | `docs/test-strategy-detailed.md`, `docs/traceability.md`                                 |
-| Release go/no-go                                             | Pending                                | `docs/quality-scorecard.md`                                                              |
+| Item                                                         | Status                                 | Where to review                                                                       |
+| ------------------------------------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Repair PR from FI-01** (ANSI-strip fix + `RCA_EXPECT` fix) | **Pending**                            | branch `repair/fi-01-ansi-strip`; body prepared in `docs/evidence/fi-01/repair-pr.md` |
+| FI-01 classification (`TEST_SCRIPT_DEFECT`, 0.70)            | Pending verification against the trace | `docs/evidence/fi-01/before-rca-report.json`                                          |
+| FI-02 classification (`ENVIRONMENT_OR_NETWORK`, 0.90)        | Pending                                | `docs/evidence/fi-02/rca-report.json`                                                 |
+| FI-03 classification (`TIMING_OR_FLAKINESS`, 0.78)           | Pending                                | `docs/evidence/fi-03/rca-report.json`                                                 |
+| Test coverage and priorities                                 | Pending                                | `docs/test-strategy-detailed.md`, `docs/traceability.md`                              |
+| Release go/no-go                                             | Pending                                | `docs/quality-scorecard.md`                                                           |
 
 ## Standing constraints
 
