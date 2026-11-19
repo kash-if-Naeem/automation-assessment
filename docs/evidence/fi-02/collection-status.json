@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "status": "ok",
+  "reason": "results parsed",
+  "results_path": "<repo>/test-results/results.json",
+  "failure_count": 1
+}

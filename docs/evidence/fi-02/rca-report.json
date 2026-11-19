@@ -1,0 +1,46 @@
+[
+  {
+    "schema_version": "1.0",
+    "scenario_id": "FI-02",
+    "test_title": "FI-02: injected abort of the products page request @fault",
+    "classification": "ENVIRONMENT_OR_NETWORK",
+    "confidence": 0.9,
+    "status": "HYPOTHESIS_PENDING_REVIEW",
+    "symptom": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products",
+    "hypotheses": [
+      {
+        "classification": "ENVIRONMENT_OR_NETWORK",
+        "confidence": 0.9,
+        "rule": "network-error-code",
+        "evidence_for": ["error message contains net::ERR_*", "test is an injected fault (@fault)"],
+        "evidence_against": ["no product assertion reached"]
+      }
+    ],
+    "evidence": [
+      {
+        "type": "error",
+        "detail": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products"
+      },
+      {
+        "type": "stack",
+        "detail": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products\nCall log:\n  - navigating to \"https://automationexercise.com/products\", waiting until \"domcontentloaded\""
+      },
+      {
+        "type": "trace",
+        "path": "<repo>/test-results/fault-fi-02-network-Fault--ac392-products-page-request-fault-chromium/trace.zip"
+      },
+      {
+        "type": "run",
+        "detail": "local @ 7445c675aaa63094e38773b7a1fad7bfcf7c6e74"
+      }
+    ],
+    "validation": "Re-run isolated test: npx playwright test -g \"FI-02\". Inspect the trace before any code change.",
+    "recommended_action": "Reviewer verifies evidence, then decides. Any patch goes to a separate branch.",
+    "requires_human_approval": true,
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "7445c675aaa63094e38773b7a1fad7bfcf7c6e74",
+      "collected_at": "2026-11-19T17:59:55.559Z"
+    }
+  }
+]

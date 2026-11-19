@@ -1,0 +1,29 @@
+[
+  {
+    "schema_version": "1.0",
+    "scenario_id": "FI-02",
+    "test_title": "FI-02: injected abort of the products page request @fault",
+    "file": "fault/fi-02-network.spec.ts",
+    "outcome": "unexpected",
+    "injected": true,
+    "attempts": 1,
+    "retry_count": 0,
+    "error_message": "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products\nCall log:\n  - navigating to \"https://automationexercise.com/products\", waiting until \"domcontentloaded\"\n",
+    "stack_top": [
+      "Error: page.goto: net::ERR_FAILED at https://automationexercise.com/products",
+      "Call log:",
+      "  - navigating to \"https://automationexercise.com/products\", waiting until \"domcontentloaded\""
+    ],
+    "stderr_tail": [""],
+    "artifacts": {
+      "trace": "<repo>/test-results/fault-fi-02-network-Fault--ac392-products-page-request-fault-chromium/trace.zip",
+      "screenshot": "<repo>/test-results/fault-fi-02-network-Fault--ac392-products-page-request-fault-chromium/test-failed-1.png",
+      "video": "<repo>/test-results/fault-fi-02-network-Fault--ac392-products-page-request-fault-chromium/video.webm"
+    },
+    "detect": {
+      "run_url": "local",
+      "commit_sha": "7445c675aaa63094e38773b7a1fad7bfcf7c6e74",
+      "collected_at": "2026-11-19T17:59:36.255Z"
+    }
+  }
+]
