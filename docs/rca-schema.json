@@ -1,27 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/qa-ai-level3/rca-record.schema.json",
-  "title": "RCA record (schema_version 1.1)",
-  "description": "One record per failed or flaky test, written to reports/rca/rca-report.json. Classifications must cite artifacts; confidence is a calibrated judgement, not proof. v1.1 adds console, network, DOM-snapshot and HEAD-diff evidence from the Collect stage.",
+  "title": "RCA record (schema_version 1.2)",
+  "description": "One record per failed or flaky test, written to reports/rca/rca-report.json. Classifications must cite artifacts; confidence is a calibrated judgement, not proof. v1.1 added console, network, DOM-snapshot and HEAD-diff evidence. v1.2 adds business severity, suggested owner, and downstream-symptom correlation.",
   "type": "object",
   "required": [
-    "schema_version",
-    "scenario_id",
-    "test_title",
+    "business_severity",
     "classification",
     "confidence",
-    "status",
-    "symptom",
-    "hypotheses",
+    "detect",
     "evidence",
-    "validation",
+    "hypotheses",
     "recommended_action",
     "requires_human_approval",
-    "detect"
+    "scenario_id",
+    "schema_version",
+    "status",
+    "suggested_owner",
+    "symptom",
+    "test_title",
+    "validation"
   ],
   "properties": {
     "schema_version": {
-      "const": "1.1"
+      "const": "1.2"
     },
     "scenario_id": {
       "type": "string",
@@ -126,6 +128,34 @@
         "collected_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "business_severity": {
+      "enum": ["BLOCKER", "HIGH", "MEDIUM", "LOW", "UNTRIAGED"],
+      "description": "Scenario risk tier, reduced when the cause is not the product."
+    },
+    "suggested_owner": {
+      "type": "string",
+      "description": "Advisory first owner; the reviewer owns the final assignment."
+    },
+    "correlation": {
+      "type": "object",
+      "description": "Correlate stage: one event often fails many tests. The first failure of a signature is primary; the rest are downstream symptoms.",
+      "required": ["signature", "primary", "group_size"],
+      "properties": {
+        "signature": {
+          "type": "string"
+        },
+        "primary": {
+          "type": "boolean"
+        },
+        "downstream_of": {
+          "type": "string"
+        },
+        "group_size": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     }

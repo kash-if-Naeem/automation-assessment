@@ -31,7 +31,7 @@ interface Hypothesis {
 }
 
 export interface RcaRecord {
-  schema_version: '1.1';
+  schema_version: '1.2';
   scenario_id: string;
   test_title: string;
   classification: Classification;
@@ -43,10 +43,79 @@ export interface RcaRecord {
   validation: string;
   recommended_action: string;
   requires_human_approval: true;
+  /** Business severity and suggested first owner (Recommend stage). */
+  business_severity: string;
+  suggested_owner: string;
+  /** Correlate stage: is this the first failure of its kind, or a downstream symptom? */
+  correlation?: { signature: string; primary: boolean; downstream_of?: string; group_size: number };
   detect: FailureRecord['detect'];
 }
 
 const CONFIDENCE_FLOOR = 0.6;
+
+/** Business severity: the scenario's risk tier, reduced when the cause is not the product. */
+function severityOf(risk: FailureRecord['risk'], classification: Classification): string {
+  const base: Record<string, string> = { P0: 'BLOCKER', P1: 'HIGH', P2: 'MEDIUM', UNKNOWN: 'UNTRIAGED' };
+  const notProduct: Classification[] = ['ENVIRONMENT_OR_NETWORK', 'THIRD_PARTY_DEPENDENCY', 'TIMING_OR_FLAKINESS'];
+  if (classification === 'UNKNOWN') return 'UNTRIAGED';
+  // A P0 journey blocked by the site is urgent to the run, but it is not a release blocker.
+  if (notProduct.includes(classification)) return risk === 'P0' ? 'HIGH' : 'LOW';
+  return base[risk] ?? 'UNTRIAGED';
+}
+
+/** Who should pick it up first. Advisory: the reviewer owns the final assignment. */
+function ownerOf(classification: Classification): string {
+  switch (classification) {
+    case 'PRODUCT_DEFECT':
+      return 'Product engineering';
+    case 'TEST_SCRIPT_DEFECT':
+    case 'LOCATOR_OR_UI_CHANGE':
+    case 'TEST_DATA_OR_STATE':
+    case 'TIMING_OR_FLAKINESS':
+      return 'QA automation';
+    case 'ENVIRONMENT_OR_NETWORK':
+    case 'THIRD_PARTY_DEPENDENCY':
+      return 'CI / infrastructure';
+    default:
+      return 'Unassigned (needs human triage)';
+  }
+}
+
+/**
+ * Correlate stage: one environmental event commonly fails many tests at once. Grouping on
+ * the classification plus a normalised error signature lets the report name one primary
+ * failure and mark the rest as downstream symptoms of it, so a reviewer triages the event
+ * once instead of reading N near-identical records.
+ */
+function signatureOf(r: RcaRecord): string {
+  const normalised = r.symptom.replace(/\d+/g, '#').replace(/\s+/g, ' ').slice(0, 120).trim();
+  return `${r.classification}::${normalised}`;
+}
+
+function markDownstream(records: RcaRecord[]): void {
+  const firstBySignature = new Map<string, RcaRecord>();
+  for (const r of records) {
+    const sig = signatureOf(r);
+    const primary = firstBySignature.get(sig);
+    if (!primary) {
+      firstBySignature.set(sig, r);
+      r.correlation = { signature: sig, primary: true, group_size: 1 };
+    } else {
+      r.correlation = {
+        signature: sig,
+        primary: false,
+        downstream_of: primary.scenario_id,
+        group_size: 0,
+      };
+    }
+  }
+  // Fill in group sizes once every member is known.
+  for (const [sig, primary] of firstBySignature) {
+    const size = records.filter((r) => r.correlation?.signature === sig).length;
+    primary.correlation!.group_size = size;
+    for (const r of records) if (r.correlation?.signature === sig) r.correlation.group_size = size;
+  }
+}
 const ROOT = process.cwd();
 const OUT_DIR = path.join(ROOT, 'reports', 'rca');
 
@@ -62,7 +131,7 @@ function changedFilesInHead(): string[] {
   }
 }
 
-function classify(f: FailureRecord, changedFallback: string[]): RcaRecord {
+export function classify(f: FailureRecord, changedFallback: string[]): RcaRecord {
   const msg = f.error_message;
   const hyps: Hypothesis[] = [];
   const hasTrace = !!f.artifacts.trace;
@@ -209,7 +278,7 @@ function classify(f: FailureRecord, changedFallback: string[]): RcaRecord {
   if (classification !== 'UNKNOWN' && confidence < CONFIDENCE_FLOOR) classification = 'UNKNOWN';
 
   return {
-    schema_version: '1.1',
+    schema_version: '1.2',
     scenario_id: f.scenario_id,
     test_title: f.test_title,
     classification,
@@ -255,6 +324,8 @@ function classify(f: FailureRecord, changedFallback: string[]): RcaRecord {
         ? 'Insufficient evidence. Human triage required; do not change code.'
         : 'Reviewer verifies evidence, then decides. Any patch goes to a separate branch.',
     requires_human_approval: true,
+    business_severity: severityOf(f.risk, classification),
+    suggested_owner: ownerOf(classification),
     detect: f.detect,
   };
 }
@@ -281,6 +352,14 @@ function summarize(status: any, records: RcaRecord[]): string {
     );
     lines.push(`- Validation: ${r.validation}`);
     lines.push(`- Recommended action: ${r.recommended_action}`);
+    lines.push(`- Business severity: ${r.business_severity} | Suggested owner: ${r.suggested_owner}`);
+    if (r.correlation && !r.correlation.primary) {
+      lines.push(
+        `- Downstream symptom of ${r.correlation.downstream_of} (${r.correlation.group_size} failures share this signature)`,
+      );
+    } else if (r.correlation && r.correlation.group_size > 1) {
+      lines.push(`- Primary failure for ${r.correlation.group_size} failures sharing this signature`);
+    }
     lines.push(`- Human approval required: YES`, '');
   }
   const unknown = records.filter((r) => r.classification === 'UNKNOWN').length;
@@ -299,20 +378,26 @@ function analyze(): void {
 
   const changed = changedFilesInHead();
   const records = failures.map((f) => classify(f, changed));
+  markDownstream(records);
 
   fs.writeFileSync(path.join(OUT_DIR, 'rca-report.json'), JSON.stringify(records, null, 2));
   fs.writeFileSync(path.join(OUT_DIR, 'rca-summary.md'), redact(summarize(status, records)));
   console.log(`[RCA Analyzer] ${records.length} record(s) written to ${OUT_DIR} (model-free)`);
 }
 
-try {
-  analyze();
-} catch (e) {
-  // Reporting must never hide the test result: write an error note and exit 0.
-  fs.mkdirSync(OUT_DIR, { recursive: true });
-  fs.writeFileSync(
-    path.join(OUT_DIR, 'rca-summary.md'),
-    `# AI Root Cause Analysis Report\n\nAnalyzer error: ${redact((e as Error).message)}\n`,
-  );
-  console.error('[RCA Analyzer] error:', redact((e as Error).message));
+if (require.main === module) {
+  try {
+    analyze();
+  } catch (e) {
+    // Reporting must never hide the test result: write an error note and exit 0.
+    fs.mkdirSync(OUT_DIR, { recursive: true });
+    fs.writeFileSync(
+      path.join(OUT_DIR, 'rca-summary.md'),
+      `# AI Root Cause Analysis Report
+
+Analyzer error: ${redact((e as Error).message)}
+`,
+    );
+    console.error('[RCA Analyzer] error:', redact((e as Error).message));
+  }
 }

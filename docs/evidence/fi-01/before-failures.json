@@ -126,9 +126,9 @@
       }
     ],
     "artifacts": {
-      "trace": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/trace.zip",
-      "screenshot": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/test-failed-1.png",
-      "video": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/video.webm",
+      "trace": "<repo>/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/trace.zip",
+      "screenshot": "<repo>/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/test-failed-1.png",
+      "video": "<repo>/test-results/ui-cart-Shopping-Cart-AE-1-7bc95-s-the-correct-line-total-p0-chromium/video.webm",
       "dom_snapshot": "inline attachment \"dom-snapshot.html\" in test-results/results.json"
     },
     "changed_files_in_head": ["tests/ui/cart.spec.ts"],

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "results_path": "C:/Users/naeemkas/AppData/Local/Temp/claude/66314ac977c1ac2b/8649b715-3475-41b7-930f-cdb984533ce1/scratchpad/repo/test-results/results.json",
+  "results_path": "<repo>/test-results/results.json",
   "junit": {
     "present": true,
     "tests": 1,

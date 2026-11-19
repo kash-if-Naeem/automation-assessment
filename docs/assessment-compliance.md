@@ -5,14 +5,14 @@ Maps each requirement of the AI Level-3 assessment handout (v1.0) to evidence in
 
 ## Mandatory gates (section 16)
 
-| Gate                                            | Status              | Evidence                                                                                                                                                 |
-| ----------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Reproducible working repo                       | **Done**            | Fresh clone → `npm ci`, typecheck, lint, format, `--list` 33 tests, 33/33 passing                                                                        |
-| ≥18 passing UI cases, ≥8 API assertions         | **Done**            | 20 UI + 2 integration, 14 API endpoint/method checks; 33/33 green in CI runs 44598064284 and 44598758208                                                 |
-| Working CI artifact capture                     | **Done**            | Artifacts on all three runs, including the failed one (1.55 MB on 44598758208)                                                                           |
-| Two properly labelled fault-injection RCAs      | **Done — three**    | FI-01 `TEST_SCRIPT_DEFECT`, FI-02 `ENVIRONMENT_OR_NETWORK`, FI-03 `TIMING_OR_FLAKINESS`; 3/3 graded by `npm run rca:verify`                              |
-| One human-reviewed patch validation             | **Open for review** | Repair PR from `fi/01-wrong-expected-total`; body in `docs/evidence/fi-01/repair-pr.md`. **The merge decision is the engineer's and has not been made.** |
-| Prompt/skill and security controls demonstrated | **Done**            | 8 challenge/correction records in `docs/evidence/ai-interaction-log.md`; 4 skills; `docs/ai-policy.md`; `skills/review.md` prompt-injection section      |
+| Gate                                            | Status           | Evidence                                                                                                                                                 |
+| ----------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reproducible working repo                       | **Done**         | Fresh clone → `npm ci`, typecheck, lint, format, `--list` 33 tests, 33/33 passing                                                                        |
+| ≥18 passing UI cases, ≥8 API assertions         | **Done**         | 20 UI + 2 integration, 14 API endpoint/method checks; 33/33 green in CI runs 44598064284 and 44598758208                                                 |
+| Working CI artifact capture                     | **Done**         | Artifacts on all three runs, including the failed one (1.55 MB on 44598758208)                                                                           |
+| Two properly labelled fault-injection RCAs      | **Done — three** | FI-01 `TEST_SCRIPT_DEFECT`, FI-02 `ENVIRONMENT_OR_NETWORK`, FI-03 `TIMING_OR_FLAKINESS`; 3/3 graded by `npm run rca:verify`                              |
+| One human-reviewed patch validation             | **Not met**      | Repair PR from `fi/01-wrong-expected-total`; body in `docs/evidence/fi-01/repair-pr.md`. **The merge decision is the engineer's and has not been made.** |
+| Prompt/skill and security controls demonstrated | **Done**         | 8 challenge/correction records in `docs/evidence/ai-interaction-log.md`; 4 skills; `docs/ai-policy.md`; `skills/review.md` prompt-injection section      |
 
 ## Outcomes (section 2)
 
@@ -42,15 +42,15 @@ Maps each requirement of the AI Level-3 assessment handout (v1.0) to evidence in
 
 ## RCA specification (section 10)
 
-| Stage       | Required                                                                                  | Status                                                                                                                        |
-| ----------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Detect      | JUnit/Playwright JSON, test id, error, stack, retry count, run URL, commit SHA            | **Done** — all seven, including JUnit XML cross-check                                                                         |
-| Collect     | Trace, screenshot, DOM snapshot, console errors, sanitized request failures, code changes | **Done** — plus response timing; URLs stripped of query strings                                                               |
-| Correlate   | Failing assertion and prior step; first failure vs downstream                             | Partial — the first failing assertion and the HEAD diff are captured; downstream-symptom suppression is not implemented       |
-| Hypothesize | Rank competing causes with evidence for and against                                       | **Done** — every record ranks hypotheses with both                                                                            |
-| Validate    | Re-run isolated test, inspect locator/response/diff, never silently edit                  | **Done** — each record carries the exact re-run command; no automatic edits                                                   |
-| Recommend   | Category, confidence, severity, reproduction, fix, owner, next action                     | Partial — category, confidence, reproduction, action and approval flag are present; business severity and named owner are not |
-| Publish     | Markdown + JSON + artifact URLs, including UNKNOWN                                        | **Done**                                                                                                                      |
+| Stage       | Required                                                                                  | Status                                                                                                                         |
+| ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Detect      | JUnit/Playwright JSON, test id, error, stack, retry count, run URL, commit SHA            | **Done** — all seven, including JUnit XML cross-check                                                                          |
+| Collect     | Trace, screenshot, DOM snapshot, console errors, sanitized request failures, code changes | **Done** — plus response timing; URLs stripped of query strings                                                                |
+| Correlate   | Failing assertion and prior step; first failure vs downstream                             | **Done** — failures group on a normalised signature; the first is `primary`, the rest carry `downstream_of` and the group size |
+| Hypothesize | Rank competing causes with evidence for and against                                       | **Done** — every record ranks hypotheses with both                                                                             |
+| Validate    | Re-run isolated test, inspect locator/response/diff, never silently edit                  | **Done** — each record carries the exact re-run command; no automatic edits                                                    |
+| Recommend   | Category, confidence, severity, reproduction, fix, owner, next action                     | **Done** — adds `business_severity` (scenario risk tag, reduced for non-product causes) and `suggested_owner`                  |
+| Publish     | Markdown + JSON + artifact URLs, including UNKNOWN                                        | **Done**                                                                                                                       |
 
 Eight categories, 0.60 confidence floor, tie → UNKNOWN, missing trace lowers confidence,
 `requires_human_approval: true` on every record, model-free with no API key required.
@@ -75,9 +75,7 @@ Eight categories, 0.60 confidence floor, tie → UNKNOWN, missing trace lowers c
 2. **No PR-triggered CI run** exists yet; opening the repair PR produces one.
 3. **No LLM adapter.** `AI_API_KEY` is accepted but unused; the classifier is rule-based and
    its confidences are fixed per rule, not calibrated against outcome frequencies.
-4. **Downstream-symptom suppression** and **business severity / owner** fields are not
-   implemented in the RCA.
-5. **CI per-test retry counts** have not been read back from an artifact, so the CI flaky
+4. **CI per-test retry counts** have not been read back from an artifact, so the CI flaky
    rate is given as a method, not a number.
-6. **No scheduled run has elapsed**, so the cron is shown by definition, not by a run record.
-7. **The live defence has not happened.** Six rubric points depend on it.
+5. **No scheduled run has elapsed**, so the cron is shown by definition, not by a run record.
+6. **The live defence has not happened.** Six rubric points depend on it.

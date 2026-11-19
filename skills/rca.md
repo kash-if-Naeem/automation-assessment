@@ -52,6 +52,25 @@ Rule: a classification must name at least one artifact and one rejected alternat
 - If two hypotheses tie, output UNKNOWN and list both.
 - Never claim a product defect from an injected fault.
 
+## Business severity and owner (Recommend stage)
+
+Severity starts from the scenario's risk tag (`@p0` → BLOCKER, `@p1` → HIGH, `@p2` → MEDIUM)
+and is reduced when the cause is not the product: a P0 journey blocked by the site is HIGH
+for the run but is not a release blocker, and anything else environmental is LOW. An
+`UNKNOWN` classification is always `UNTRIAGED` — an untriaged failure must not look benign.
+
+Suggested owner follows the category: product defects to product engineering, test and
+timing defects to QA automation, environment and third-party to CI/infrastructure. It is
+advisory; the reviewer owns the final assignment.
+
+## Correlating downstream symptoms
+
+One environmental event routinely fails many tests at once. Records are grouped on
+classification plus a digit-normalised error signature: the first failure of a signature is
+`primary`, the rest carry `downstream_of` and the group size. A reviewer then triages the
+event once rather than reading N near-identical records. Grouping never changes a
+classification — it only orders the reading.
+
 ## Output
 
 - `reports/rca/rca-report.json` (schema in `docs/rca-schema.json`)

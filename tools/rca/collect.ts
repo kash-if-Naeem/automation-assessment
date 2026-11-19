@@ -19,6 +19,8 @@ export interface FailureRecord {
   test_title: string;
   file: string;
   outcome: 'unexpected' | 'flaky';
+  /** Risk tier from the test's @p0/@p1/@p2 tag; drives business severity. */
+  risk: 'P0' | 'P1' | 'P2' | 'UNKNOWN';
   injected: boolean;
   attempts: number;
   retry_count: number;
@@ -81,6 +83,12 @@ function changedFilesInHead(): string[] {
 function scenarioIdOf(title: string): string {
   const m = title.match(/\b(AE|FI)-\d+\b/);
   return m ? m[0] : 'UNKNOWN';
+}
+
+/** Risk tier comes from the tag the test carries, so business severity is not guessed. */
+function riskOf(title: string): 'P0' | 'P1' | 'P2' | 'UNKNOWN' {
+  const m = title.match(/@p([012])(?![0-9])/i);
+  return m ? (`P${m[1]}` as 'P0' | 'P1' | 'P2') : 'UNKNOWN';
 }
 
 /** Attribute counts from the JUnit XML, used as a cross-check on the JSON report. */
@@ -219,6 +227,7 @@ function collect(): void {
           test_title: redact(spec.title),
           file,
           outcome: test.status,
+          risk: riskOf(spec.title),
           injected: /@fault|FI-\d+/.test(spec.title),
           attempts: results.length,
           retry_count: Math.max(results.length - 1, 0),

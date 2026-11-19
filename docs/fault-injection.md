@@ -89,15 +89,15 @@ Use `FAULT_INJECTION=all` to run FI-02 and FI-03 together, as CI does.
 
 ## Evidence checklist
 
-| Item                        | FI-01                              | FI-02                               | FI-03                            |
-| --------------------------- | ---------------------------------- | ----------------------------------- | -------------------------------- |
-| Before / after runs         | Yes                                | n/a (injection always fails)        | n/a                              |
-| Commit ids                  | `29e4209` → `5931405` → `7745b08`  | —                                   | —                                |
-| Trace / screenshot paths    | Yes                                | Yes                                 | Yes                              |
-| RCA JSON + Markdown         | Yes                                | Yes                                 | Yes                              |
-| Ranked alternative rejected | `PRODUCT_DEFECT`                   | `THIRD_PARTY_DEPENDENCY` considered | `LOCATOR_OR_UI_CHANGE` outranked |
-| Automated grading           | 1/1                                | 2/2 with FI-03                      | 2/2 with FI-02                   |
-| Human decision              | **Pending — repair PR open**       | Pending                             | Pending                          |
-| Final validated fix         | Minimal one-token patch + ANSI fix | n/a                                 | n/a                              |
+| Item                        | FI-01                                 | FI-02                               | FI-03                            |
+| --------------------------- | ------------------------------------- | ----------------------------------- | -------------------------------- |
+| Before / after runs         | Yes                                   | n/a (injection always fails)        | n/a                              |
+| Commit ids                  | `29e4209` → `5931405` → `7745b08`     | —                                   | —                                |
+| Trace / screenshot paths    | Yes                                   | Yes                                 | Yes                              |
+| RCA JSON + Markdown         | Yes                                   | Yes                                 | Yes                              |
+| Ranked alternative rejected | `PRODUCT_DEFECT`                      | `THIRD_PARTY_DEPENDENCY` considered | `LOCATOR_OR_UI_CHANGE` outranked |
+| Automated grading           | 1/1                                   | 2/2 with FI-03                      | 2/2 with FI-02                   |
+| Human decision              | **Pending — PR prepared, not opened** | Pending                             | Pending                          |
+| Final validated fix         | Minimal one-token patch + ANSI fix    | n/a                                 | n/a                              |
 
 No injected behaviour was reported as a product defect at any point.
