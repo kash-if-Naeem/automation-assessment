@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import { redact } from '../../src/utils/logger';
+import { redact, stripAnsi } from '../../src/utils/logger';
 import type { FailureRecord } from './collect';
 
 /**
@@ -132,7 +132,9 @@ function changedFilesInHead(): string[] {
 }
 
 export function classify(f: FailureRecord, changedFallback: string[]): RcaRecord {
-  const msg = f.error_message;
+  // Defensive: the collector already strips these, but a rule must never depend on an
+  // upstream stage having run. This rule silently stopped matching twice for that reason.
+  const msg = stripAnsi(f.error_message);
   const hyps: Hypothesis[] = [];
   const hasTrace = !!f.artifacts.trace;
   const changed = f.changed_files_in_head?.length ? f.changed_files_in_head : changedFallback;

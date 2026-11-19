@@ -26,6 +26,7 @@
     "rca:collect": "tsx tools/rca/collect.ts",
     "rca:analyze": "tsx tools/rca/analyze.ts",
     "rca:verify": "tsx tools/rca/verify-injections.ts",
+    "rca:selftest": "tsx tools/rca/selftest.ts",
     "clean": "rimraf playwright-report test-results reports/rca"
   },
   "devDependencies": {
