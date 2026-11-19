@@ -83,7 +83,7 @@ function classify(f: FailureRecord, changed: string[]): RcaRecord {
 
   // Rule 2: site unavailable (5xx/429 or queue page). Word boundaries avoid matching digits in other numbers.
   if (
-    /\b(503|429)\b|queue full|service unavailable|non-json body \(http 5\d\d\)|page-snapshot: site|ssl handshake|error code 52\d/i.test(
+    /\b(403|429|503)\b|queue full|service unavailable|non-json body \(http 5\d\d\)|page-snapshot: site|ssl handshake|error code 52\d/i.test(
       msg,
     )
   ) {
@@ -97,7 +97,7 @@ function classify(f: FailureRecord, changed: string[]): RcaRecord {
   }
 
   // Rule 3: non-JSON body with a non-5xx status, e.g. a wrong endpoint path returns an HTML 404.
-  if (/non-json body \(http (?!5)\d{3}\)/i.test(msg)) {
+  if (/non-json body \(http (?!5|403|429)\d{3}\)/i.test(msg)) {
     hyps.push({
       classification: 'TEST_SCRIPT_DEFECT',
       confidence: 0.55,

@@ -69,6 +69,9 @@ function snapshotMarker(tracePath?: string): string {
   if (/SSL handshake failed|error code 52\d/i.test(text)) {
     return ' [page-snapshot: site error page (SSL handshake failed, error code 52x)]';
   }
+  if (/attention required|cloudflare|403 forbidden|access denied/i.test(text)) {
+    return ' [page-snapshot: site access block (WAF/403)]';
+  }
   if (/queue full|under heavy load/i.test(text)) return ' [page-snapshot: site queue page (queue full)]';
   return '';
 }
